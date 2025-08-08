@@ -1,7 +1,13 @@
-import './bootstrap';
+// Import Bootstrap JS
+import 'bootstrap';
 
-import Alpine from 'alpinejs';
+document.addEventListener('DOMContentLoaded', function () {
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const sidebar = document.getElementById('sidebar');
 
-window.Alpine = Alpine;
-
-Alpine.start();
+    if (sidebarToggle && sidebar) {
+        sidebarToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('d-none');
+        });
+    }
+});

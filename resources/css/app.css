@@ -1,3 +1,719 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Import Bootstrap */
+@import "bootstrap/dist/css/bootstrap.min.css";
+@import "bootstrap-icons/font/bootstrap-icons.css";
+
+
+/* ---------------------------------------------------
+      1. COLOR PALETTE (CSS Variables)
+--------------------------------------------------- */
+:root {
+  --color-primary: #1e40af;
+  /* Sapphire Blue */
+  --color-primary-hover: #2563eb;
+  --color-primary-active: #1e3a8a;
+
+  --color-secondary: #e57300;
+  /* Amber Orange */
+  --color-secondary-hover: #ff8800;
+  --color-secondary-active: #b45309;
+
+  --color-success: #16a34a;
+  /* Emerald Green */
+  --color-success-hover: #22c55e;
+  --color-success-active: #15803d;
+
+  --color-danger: #be123c;
+  /* Crimson Red */
+  --color-danger-hover: #e11d48;
+  --color-danger-active: #9f1239;
+
+  --color-warning: #eab308;
+  /* Gold */
+  --color-warning-hover: #fde047;
+  --color-warning-active: #ca8a04;
+
+  --color-info: #0891b2;
+  /* Sea Blue */
+  --color-info-hover: #38bdf8;
+  --color-info-active: #0e7490;
+
+  --color-light: #f8fafc;
+  /* Off White */
+  --color-light-hover: #f1f5f9;
+  --color-light-active: #e5e7eb;
+
+  --color-dark: #1e293b;
+  /* Deep Navy */
+  --color-dark-hover: #334155;
+  --color-dark-active: #0f172a;
+
+  --color-text-light: #f8fafc;
+  --color-text-dark: #0f172a;
+  --color-border: #e5e7eb;
+  --color-card-bg: #ffffff;
+  --color-dropdown-bg: #232e3d;
+
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+}
+
+/* ---------------------------------------------------
+      2. BUTTONS: BASE, HOVER, ACTIVE
+--------------------------------------------------- */
+.btn-primary {
+  background: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+  color: var(--color-text-light) !important;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+  background: var(--color-primary-hover) !important;
+  border-color: var(--color-primary-hover) !important;
+  color: var(--color-text-light) !important;
+}
+
+.btn-primary:active,
+.btn-primary.active,
+.show>.btn-primary.dropdown-toggle {
+  background: var(--color-primary-active) !important;
+  border-color: var(--color-primary-active) !important;
+  color: var(--color-text-light) !important;
+}
+
+.btn-secondary {
+  background: var(--color-secondary) !important;
+  border-color: var(--color-secondary) !important;
+  color: var(--color-text-light) !important;
+}
+
+.btn-secondary:hover,
+.btn-secondary:focus {
+  background: var(--color-secondary-hover) !important;
+  border-color: var(--color-secondary-hover) !important;
+}
+
+.btn-secondary:active,
+.btn-secondary.active,
+.show>.btn-secondary.dropdown-toggle {
+  background: var(--color-secondary-active) !important;
+  border-color: var(--color-secondary-active) !important;
+}
+
+.btn-success {
+  background: var(--color-success) !important;
+  border-color: var(--color-success) !important;
+  color: var(--color-text-light) !important;
+}
+
+.btn-success:hover,
+.btn-success:focus {
+  background: var(--color-success-hover) !important;
+  border-color: var(--color-success-hover) !important;
+}
+
+.btn-success:active,
+.btn-success.active,
+.show>.btn-success.dropdown-toggle {
+  background: var(--color-success-active) !important;
+  border-color: var(--color-success-active) !important;
+}
+
+.btn-danger {
+  background: var(--color-danger) !important;
+  border-color: var(--color-danger) !important;
+  color: var(--color-text-light) !important;
+}
+
+.btn-danger:hover,
+.btn-danger:focus {
+  background: var(--color-danger-hover) !important;
+  border-color: var(--color-danger-hover) !important;
+}
+
+.btn-danger:active,
+.btn-danger.active,
+.show>.btn-danger.dropdown-toggle {
+  background: var(--color-danger-active) !important;
+  border-color: var(--color-danger-active) !important;
+}
+
+.btn-warning {
+  background: var(--color-warning) !important;
+  border-color: var(--color-warning) !important;
+  color: var(--color-dark) !important;
+}
+
+.btn-warning:hover,
+.btn-warning:focus {
+  background: var(--color-warning-hover) !important;
+  border-color: var(--color-warning-hover) !important;
+}
+
+.btn-warning:active,
+.btn-warning.active,
+.show>.btn-warning.dropdown-toggle {
+  background: var(--color-warning-active) !important;
+  border-color: var(--color-warning-active) !important;
+}
+
+.btn-info {
+  background: var(--color-info) !important;
+  border-color: var(--color-info) !important;
+  color: var(--color-light) !important;
+}
+
+.btn-info:hover,
+.btn-info:focus {
+  background: var(--color-info-hover) !important;
+  border-color: var(--color-info-hover) !important;
+}
+
+.btn-info:active,
+.btn-info.active,
+.show>.btn-info.dropdown-toggle {
+  background: var(--color-info-active) !important;
+  border-color: var(--color-info-active) !important;
+}
+
+.btn-light {
+  background: var(--color-light) !important;
+  border-color: var(--color-border) !important;
+  color: var(--color-dark) !important;
+}
+
+.btn-light:hover,
+.btn-light:focus {
+  background: var(--color-light-hover) !important;
+  border-color: var(--color-border) !important;
+}
+
+.btn-light:active,
+.btn-light.active,
+.show>.btn-light.dropdown-toggle {
+  background: var(--color-light-active) !important;
+  border-color: var(--color-border) !important;
+}
+
+.btn-dark {
+  background: var(--color-dark) !important;
+  border-color: var(--color-dark) !important;
+  color: var(--color-light) !important;
+}
+
+.btn-dark:hover,
+.btn-dark:focus {
+  background: var(--color-dark-hover) !important;
+  border-color: var(--color-dark-hover) !important;
+}
+
+.btn-dark:active,
+.btn-dark.active,
+.show>.btn-dark.dropdown-toggle {
+  background: var(--color-dark-active) !important;
+  border-color: var(--color-dark-active) !important;
+}
+
+/* ---------------------------------------------------
+      3. BACKGROUND UTILITIES
+--------------------------------------------------- */
+.bg-primary {
+  background: var(--color-primary) !important;
+  color: var(--color-text-light) !important;
+}
+
+.bg-secondary {
+  background: var(--color-secondary) !important;
+  color: var(--color-text-light) !important;
+}
+
+.bg-success {
+  background: var(--color-success) !important;
+  color: var(--color-text-light) !important;
+}
+
+.bg-danger {
+  background: var(--color-danger) !important;
+  color: var(--color-text-light) !important;
+}
+
+.bg-warning {
+  background: var(--color-warning) !important;
+  color: var(--color-dark) !important;
+}
+
+.bg-info {
+  background: var(--color-info) !important;
+  color: var(--color-light) !important;
+}
+
+.bg-light {
+  background: var(--color-light) !important;
+  color: var(--color-dark) !important;
+}
+
+.bg-dark {
+  background: var(--color-dark) !important;
+  color: var(--color-light) !important;
+}
+
+/* ---------------------------------------------------
+      4. TEXT UTILITIES
+--------------------------------------------------- */
+.text-primary {
+  color: var(--color-primary) !important;
+}
+
+.text-secondary {
+  color: var(--color-secondary) !important;
+}
+
+.text-success {
+  color: var(--color-success) !important;
+}
+
+.text-danger {
+  color: var(--color-danger) !important;
+}
+
+.text-warning {
+  color: var(--color-warning) !important;
+}
+
+.text-info {
+  color: var(--color-info) !important;
+}
+
+.text-light {
+  color: var(--color-light) !important;
+}
+
+.text-dark {
+  color: var(--color-dark) !important;
+}
+
+/* ---------------------------------------------------
+      5. BORDER UTILITIES
+--------------------------------------------------- */
+.border-primary {
+  border-color: var(--color-primary) !important;
+}
+
+.border-secondary {
+  border-color: var(--color-secondary) !important;
+}
+
+.border-success {
+  border-color: var(--color-success) !important;
+}
+
+.border-danger {
+  border-color: var(--color-danger) !important;
+}
+
+.border-warning {
+  border-color: var(--color-warning) !important;
+}
+
+.border-info {
+  border-color: var(--color-info) !important;
+}
+
+.border-light {
+  border-color: var(--color-light) !important;
+}
+
+.border-dark {
+  border-color: var(--color-dark) !important;
+}
+
+/* ---------------------------------------------------
+      6. COMPONENTS: ALERTS, BADGES, CARDS, PAGINATION, ETC.
+--------------------------------------------------- */
+/* Alerts */
+.alert-primary {
+  background: var(--color-primary) !important;
+  color: var(--color-text-light) !important;
+  border-color: var(--color-primary) !important;
+}
+
+.alert-secondary {
+  background: var(--color-secondary) !important;
+  color: var(--color-text-light) !important;
+  border-color: var(--color-secondary) !important;
+}
+
+.alert-success {
+  background: var(--color-success) !important;
+  color: var(--color-text-light) !important;
+  border-color: var(--color-success) !important;
+}
+
+.alert-danger {
+  background: var(--color-danger) !important;
+  color: var(--color-text-light) !important;
+  border-color: var(--color-danger) !important;
+}
+
+.alert-warning {
+  background: var(--color-warning) !important;
+  color: var(--color-dark) !important;
+  border-color: var(--color-warning) !important;
+}
+
+.alert-info {
+  background: var(--color-info) !important;
+  color: var(--color-light) !important;
+  border-color: var(--color-info) !important;
+}
+
+.alert-light {
+  background: var(--color-light) !important;
+  color: var(--color-dark) !important;
+  border-color: var(--color-border) !important;
+}
+
+.alert-dark {
+  background: var(--color-dark) !important;
+  color: var(--color-light) !important;
+  border-color: var(--color-dark) !important;
+}
+
+/* Badges */
+.badge-primary {
+  background: var(--color-primary) !important;
+  color: var(--color-light) !important;
+}
+
+.badge-secondary {
+  background: var(--color-secondary) !important;
+  color: var(--color-light) !important;
+}
+
+.badge-success {
+  background: var(--color-success) !important;
+  color: var(--color-light) !important;
+}
+
+.badge-danger {
+  background: var(--color-danger) !important;
+  color: var(--color-light) !important;
+}
+
+.badge-warning {
+  background: var(--color-warning) !important;
+  color: var(--color-dark) !important;
+}
+
+.badge-info {
+  background: var(--color-info) !important;
+  color: var(--color-light) !important;
+}
+
+.badge-light {
+  background: var(--color-light) !important;
+  color: var(--color-dark) !important;
+}
+
+.badge-dark {
+  background: var(--color-dark) !important;
+  color: var(--color-light) !important;
+}
+
+/* Cards */
+.card {
+  background: var(--color-card-bg);
+  border-color: var(--color-border);
+}
+
+.card-header.bg-primary,
+.card-header.text-bg-primary {
+  background: var(--color-primary) !important;
+  color: var(--color-text-light) !important;
+}
+
+.card-header.bg-secondary,
+.card-header.text-bg-secondary {
+  background: var(--color-secondary) !important;
+  color: var(--color-text-light) !important;
+}
+
+.card-header.bg-success,
+.card-header.text-bg-success {
+  background: var(--color-success) !important;
+  color: var(--color-text-light) !important;
+}
+
+.card-header.bg-danger,
+.card-header.text-bg-danger {
+  background: var(--color-danger) !important;
+  color: var(--color-text-light) !important;
+}
+
+.card-header.bg-warning,
+.card-header.text-bg-warning {
+  background: var(--color-warning) !important;
+  color: var(--color-dark) !important;
+}
+
+.card-header.bg-info,
+.card-header.text-bg-info {
+  background: var(--color-info) !important;
+  color: var(--color-light) !important;
+}
+
+.card-header.bg-light,
+.card-header.text-bg-light {
+  background: var(--color-light) !important;
+  color: var(--color-dark) !important;
+}
+
+.card-header.bg-dark,
+.card-header.text-bg-dark {
+  background: var(--color-dark) !important;
+  color: var(--color-light) !important;
+}
+
+/* Pagination */
+.page-item.active .page-link {
+  background: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+  color: var(--color-text-light) !important;
+}
+
+.page-link {
+  color: var(--color-primary);
+  border-color: var(--color-border);
+}
+
+.page-link:hover {
+  background: var(--color-secondary);
+  color: var(--color-light);
+}
+
+/* Progress */
+.progress-bar {
+  background: var(--color-primary) !important;
+}
+
+.progress-bar.bg-success {
+  background: var(--color-success) !important;
+}
+
+.progress-bar.bg-danger {
+  background: var(--color-danger) !important;
+}
+
+.progress-bar.bg-warning {
+  background: var(--color-warning) !important;
+  color: var(--color-dark) !important;
+}
+
+.progress-bar.bg-info {
+  background: var(--color-info) !important;
+}
+
+/* List Groups */
+.list-group-item.active,
+.list-group-item.active:focus,
+.list-group-item.active:hover {
+  background: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+  color: var(--color-text-light) !important;
+}
+
+.list-group-item {
+  border-color: var(--color-border) !important;
+}
+
+/* Tables (Row highlights for striped tables) */
+.table-primary {
+  background: #e0e7ff !important;
+}
+
+.table-secondary {
+  background: #ffe4c2 !important;
+}
+
+.table-success {
+  background: #d1fae5 !important;
+}
+
+.table-danger {
+  background: #fee2e2 !important;
+}
+
+.table-warning {
+  background: #fef9c3 !important;
+}
+
+.table-info {
+  background: #cffafe !important;
+}
+
+.table-light {
+  background: var(--color-light) !important;
+}
+
+.table-dark {
+  background: var(--color-dark) !important;
+  color: var(--color-light) !important;
+}
+
+/* ---------------------------------------------------
+      7. NAVBAR & DROPDOWN
+--------------------------------------------------- */
+.navbar-brand {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-light) !important;
+}
+
+.navbar-brand:hover {
+  color: var(--color-info) !important;
+}
+
+.dropdown-menu {
+  background: var(--color-primary) !important;
+  border: 1px solid var(--color-primary-hover) !important;
+}
+
+.dropdown-item {
+  color: var(--color-text-light) !important;
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+  background: var(--color-secondary) !important;
+  color: var(--color-light) !important;
+}
+
+/* ---------------------------------------------------
+      8. EXAMPLE UTILITY HOVERS
+--------------------------------------------------- */
+.bg-primary:hover,
+.bg-primary:focus {
+  background: var(--color-primary-hover) !important;
+}
+
+.bg-secondary:hover,
+.bg-secondary:focus {
+  background: var(--color-secondary-hover) !important;
+}
+
+.bg-success:hover,
+.bg-success:focus {
+  background: var(--color-success-hover) !important;
+}
+
+.bg-danger:hover,
+.bg-danger:focus {
+  background: var(--color-danger-hover) !important;
+}
+
+.bg-warning:hover,
+.bg-warning:focus {
+  background: var(--color-warning-hover) !important;
+}
+
+.bg-info:hover,
+.bg-info:focus {
+  background: var(--color-info-hover) !important;
+}
+
+.bg-light:hover,
+.bg-light:focus {
+  background: var(--color-light-hover) !important;
+}
+
+.bg-dark:hover,
+.bg-dark:focus {
+  background: var(--color-dark-hover) !important;
+}
+
+.text-primary:hover {
+  color: var(--color-primary-hover) !important;
+}
+
+.text-secondary:hover {
+  color: var(--color-secondary-hover) !important;
+}
+
+.text-success:hover {
+  color: var(--color-success-hover) !important;
+}
+
+.text-danger:hover {
+  color: var(--color-danger-hover) !important;
+}
+
+.text-warning:hover {
+  color: var(--color-warning-hover) !important;
+}
+
+.text-info:hover {
+  color: var(--color-info-hover) !important;
+}
+
+.text-light:hover {
+  color: var(--color-light-hover) !important;
+}
+
+.text-dark:hover {
+  color: var(--color-dark-hover) !important;
+}
+
+/* Base form control colors */
+.form-control {
+  background-color: var(--color-light);
+  color: var(--color-text-dark);
+  border: 1px solid var(--color-border);
+}
+
+/* Hover state: change border color only */
+.form-control:hover {
+  border-color: var(--color-secondary);
+}
+
+/* Focus state: background stays light, border and shadow gets primary color */
+.form-control:focus {
+  background-color: var(--color-light);
+  color: var(--color-text-dark);
+  border-color: var(--color-primary);
+}
+
+/* Disabled and readonly (optional consistent look) */
+.form-control:disabled,
+.form-control[readonly] {
+  background-color: var(--color-light);
+  color: var(--color-text-dark);
+  border-color: var(--color-border);
+}
+
+/* ---------------------------------------------------
+       btn-link: BASE, HOVER, FOCUS, ACTIVE STATES
+--------------------------------------------------- */
+.btn-link {
+  font-weight: var(--font-weight-normal);
+  color: var(--color-primary) !important;
+}
+
+.btn-link:hover,
+.btn-link:focus {
+  color: var(--color-primary-hover) !important;
+}
+
+.btn-link:active,
+.btn-link.active {
+  color: var(--color-primary-active) !important;
+}
+
+/* Disabled state */
+.btn-link:disabled,
+.btn-link.disabled {
+  color: var(--color-light) !important;
+}
