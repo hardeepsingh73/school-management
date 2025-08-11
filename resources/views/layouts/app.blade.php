@@ -15,6 +15,9 @@
 
     <!-- Bootstrap & Vite Assets -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @isset($style)
+        {{ $style }}
+    @endisset
 </head>
 
 <body class="font-sans bg-light min-vh-100 d-flex flex-column">
@@ -85,6 +88,9 @@
 
         {{-- Footer --}}
         @include('layouts.footer')
+        @isset($script)
+            {{ $script }}
+        @endisset
     </div>
 </body>
 

@@ -10,6 +10,9 @@
 
     <!-- Your CSS and JS via Vite -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @isset($style)
+        {{ $style }}
+    @endisset
 </head>
 
 <body class="font-sans bg-light">
@@ -48,6 +51,9 @@
             });
         });
     </script>
+    @isset($script)
+        {{ $script }}
+    @endisset
 </body>
 
 </html>
