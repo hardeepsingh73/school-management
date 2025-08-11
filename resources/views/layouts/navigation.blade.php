@@ -9,7 +9,7 @@
             <!-- Brand/logo -->
             <a class="navbar-brand d-flex align-items-center" href="{{ url('/') }}" aria-label="Home">
                 <i class="bi bi-rocket-takeoff me-2"></i>
-                <span class="d-none d-sm-inline fw-bold">{{ config('app.name', 'Laravel') }}</span>
+                <span class="d-none d-sm-inline fw-bold">{{ setting('site_name', 'Laravel') }}</span>
             </a>
 
             <!-- Main navbar toggler -->
