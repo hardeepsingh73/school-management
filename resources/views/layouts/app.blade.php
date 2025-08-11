@@ -73,8 +73,12 @@
                         </div>
                     @endif
 
-                    {{-- Page Slot Content --}}
-                    {{ $slot }}
+                    <div class="row justify-content-center">
+                        <div class="col-xxl-10">
+                            {{-- Page Slot Content --}}
+                            {{ $slot }}
+                        </div>
+                    </div>
                 </div>
             </main>
         </div>

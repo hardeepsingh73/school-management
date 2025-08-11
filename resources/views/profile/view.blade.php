@@ -17,130 +17,125 @@
     </x-slot>
 
     <!-- Profile Card -->
-    <div class="row justify-content-center">
-        <div class="col-xxl-10">
-            <div class="card shadow-sm border-0 rounded-3 overflow-hidden">
+    <div class="card shadow-sm border-0 rounded-3 overflow-hidden">
 
-                <!-- Card Header -->
-                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom">
-                    <h2 class="h5 mb-0 fw-semibold">Profile Information</h2>
+        <!-- Card Header -->
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom">
+            <h2 class="h5 mb-0 fw-semibold">Profile Information</h2>
+            <div class="d-flex gap-2">
+                <a href="{{ route('profile.edit') }}" class="btn btn-sm btn-primary">
+                    <i class="bi bi-pencil-square me-1"></i> Edit Profile
+                </a>
+                @if (Auth::user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && !Auth::user()->hasVerifiedEmail())
+                    <form method="POST" action="{{ route('verification.send') }}" id="resendVerificationForm">
+                        @csrf
+                        <button type="submit" class="btn btn-sm btn-outline-warning">
+                            <i class="bi bi-envelope-exclamation me-1"></i> Resend Verification
+                        </button>
+                    </form>
+                @endif
+            </div>
+        </div>
+
+        <!-- Profile Body -->
+        <div class="card-body p-0">
+            <div class="row g-0">
+                <!-- Profile Picture & Quick Actions -->
+                <div class="col-md-4 border-end p-4 d-flex flex-column align-items-center text-center">
+                    <div class="avatar avatar-lg mb-2">
+                        <i class="bi bi-person-circle text-secondary" style="font-size:4rem;"></i>
+                    </div>
+                    <h3 class="h5 mb-1">{{ Auth::user()->name }}</h3>
+                    <p class="text-muted small mb-3">{{ Auth::user()->role ?? 'User' }}</p>
                     <div class="d-flex gap-2">
-                        <a href="{{ route('profile.edit') }}" class="btn btn-sm btn-primary">
-                            <i class="bi bi-pencil-square me-1"></i> Edit Profile
-                        </a>
-                        @if (Auth::user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && !Auth::user()->hasVerifiedEmail())
-                            <form method="POST" action="{{ route('verification.send') }}" id="resendVerificationForm">
-                                @csrf
-                                <button type="submit" class="btn btn-sm btn-outline-warning">
-                                    <i class="bi bi-envelope-exclamation me-1"></i> Resend Verification
-                                </button>
-                            </form>
+                        <button class="btn btn-sm btn-outline-secondary" title="Share Profile">
+                            <i class="bi bi-share"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-secondary" title="Show QR Code">
+                            <i class="bi bi-qr-code"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Profile Details -->
+                <div class="col-md-8 p-4">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4 text-muted">Full Name</dt>
+                        <dd class="col-sm-8">{{ Auth::user()->name }}</dd>
+
+                        <dt class="col-sm-4 text-muted">Email Address</dt>
+                        <dd class="col-sm-8 d-flex align-items-center">
+                            {{ Auth::user()->email }}
+                            @if (Auth::user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail)
+                                <span
+                                    class="badge ms-2 bg-{{ Auth::user()->hasVerifiedEmail() ? 'success' : 'danger' }}">
+                                    {{ Auth::user()->hasVerifiedEmail() ? 'Verified' : 'Unverified' }}
+                                </span>
+                            @endif
+                        </dd>
+
+                        <dt class="col-sm-4 text-muted">Account Created</dt>
+                        <dd class="col-sm-8">
+                            {{ Auth::user()->created_at->format('F j, Y') }}
+                            <small class="text-muted">({{ Auth::user()->created_at->diffForHumans() }})</small>
+                        </dd>
+
+                        <dt class="col-sm-4 text-muted">Last Updated</dt>
+                        <dd class="col-sm-8">
+                            {{ Auth::user()->updated_at->format('F j, Y') }}
+                            <small class="text-muted">({{ Auth::user()->updated_at->diffForHumans() }})</small>
+                        </dd>
+
+                        @if (Auth::user()->last_login_at)
+                            <dt class="col-sm-4 text-muted">Last Login</dt>
+                            <dd class="col-sm-8">
+                                {{ Auth::user()->last_login_at->format('F j, Y \a\t g:i A') }}
+                                <small class="text-muted">({{ Auth::user()->last_login_at->diffForHumans() }})</small>
+                            </dd>
                         @endif
-                    </div>
+                    </dl>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer with Tabs -->
+        <div class="card-footer bg-white border-top py-0">
+            <ul class="nav nav-tabs card-header-tabs px-3 pt-3" id="profileTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="activity-tab" data-bs-toggle="tab" data-bs-target="#activity"
+                        type="button" role="tab">
+                        <i class="bi bi-activity me-1"></i> Activity
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="security-tab" data-bs-toggle="tab" data-bs-target="#security"
+                        type="button" role="tab">
+                        <i class="bi bi-shield-lock me-1"></i> Security
+                    </button>
+                </li>
+            </ul>
+
+            <div class="tab-content p-3" id="profileTabsContent">
+                <!-- Activity Tab -->
+                <div class="tab-pane fade show active" id="activity" role="tabpanel">
+                    <p class="text-muted mb-0">Recent user activity will appear here.</p>
                 </div>
 
-                <!-- Profile Body -->
-                <div class="card-body p-0">
-                    <div class="row g-0">
-                        <!-- Profile Picture & Quick Actions -->
-                        <div class="col-md-4 border-end p-4 d-flex flex-column align-items-center text-center">
-                            <div class="avatar avatar-lg mb-2">
-                                <i class="bi bi-person-circle text-secondary" style="font-size:4rem;"></i>
-                            </div>
-                            <h3 class="h5 mb-1">{{ Auth::user()->name }}</h3>
-                            <p class="text-muted small mb-3">{{ Auth::user()->role ?? 'User' }}</p>
-                            <div class="d-flex gap-2">
-                                <button class="btn btn-sm btn-outline-secondary" title="Share Profile">
-                                    <i class="bi bi-share"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-secondary" title="Show QR Code">
-                                    <i class="bi bi-qr-code"></i>
-                                </button>
-                            </div>
+                <!-- Security Tab -->
+                <div class="tab-pane fade" id="security" role="tabpanel">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h4 class="h6 mb-1">Password</h4>
+                            <p class="small text-muted mb-0">Last changed 3 months ago</p>
                         </div>
-
-                        <!-- Profile Details -->
-                        <div class="col-md-8 p-4">
-                            <dl class="row mb-0">
-                                <dt class="col-sm-4 text-muted">Full Name</dt>
-                                <dd class="col-sm-8">{{ Auth::user()->name }}</dd>
-
-                                <dt class="col-sm-4 text-muted">Email Address</dt>
-                                <dd class="col-sm-8 d-flex align-items-center">
-                                    {{ Auth::user()->email }}
-                                    @if (Auth::user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail)
-                                        <span
-                                            class="badge ms-2 bg-{{ Auth::user()->hasVerifiedEmail() ? 'success' : 'danger' }}">
-                                            {{ Auth::user()->hasVerifiedEmail() ? 'Verified' : 'Unverified' }}
-                                        </span>
-                                    @endif
-                                </dd>
-
-                                <dt class="col-sm-4 text-muted">Account Created</dt>
-                                <dd class="col-sm-8">
-                                    {{ Auth::user()->created_at->format('F j, Y') }}
-                                    <small class="text-muted">({{ Auth::user()->created_at->diffForHumans() }})</small>
-                                </dd>
-
-                                <dt class="col-sm-4 text-muted">Last Updated</dt>
-                                <dd class="col-sm-8">
-                                    {{ Auth::user()->updated_at->format('F j, Y') }}
-                                    <small class="text-muted">({{ Auth::user()->updated_at->diffForHumans() }})</small>
-                                </dd>
-
-                                @if (Auth::user()->last_login_at)
-                                    <dt class="col-sm-4 text-muted">Last Login</dt>
-                                    <dd class="col-sm-8">
-                                        {{ Auth::user()->last_login_at->format('F j, Y \a\t g:i A') }}
-                                        <small
-                                            class="text-muted">({{ Auth::user()->last_login_at->diffForHumans() }})</small>
-                                    </dd>
-                                @endif
-                            </dl>
-                        </div>
+                        <button class="btn btn-sm btn-outline-primary">Change Password</button>
                     </div>
-                </div>
-
-                <!-- Footer with Tabs -->
-                <div class="card-footer bg-white border-top py-0">
-                    <ul class="nav nav-tabs card-header-tabs px-3 pt-3" id="profileTabs" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="activity-tab" data-bs-toggle="tab"
-                                data-bs-target="#activity" type="button" role="tab">
-                                <i class="bi bi-activity me-1"></i> Activity
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="security-tab" data-bs-toggle="tab" data-bs-target="#security"
-                                type="button" role="tab">
-                                <i class="bi bi-shield-lock me-1"></i> Security
-                            </button>
-                        </li>
-                    </ul>
-
-                    <div class="tab-content p-3" id="profileTabsContent">
-                        <!-- Activity Tab -->
-                        <div class="tab-pane fade show active" id="activity" role="tabpanel">
-                            <p class="text-muted mb-0">Recent user activity will appear here.</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h4 class="h6 mb-1">Two-Factor Authentication</h4>
+                            <p class="small text-muted mb-0">Add extra security to your account</p>
                         </div>
-
-                        <!-- Security Tab -->
-                        <div class="tab-pane fade" id="security" role="tabpanel">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <div>
-                                    <h4 class="h6 mb-1">Password</h4>
-                                    <p class="small text-muted mb-0">Last changed 3 months ago</p>
-                                </div>
-                                <button class="btn btn-sm btn-outline-primary">Change Password</button>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h4 class="h6 mb-1">Two-Factor Authentication</h4>
-                                    <p class="small text-muted mb-0">Add extra security to your account</p>
-                                </div>
-                                <button class="btn btn-sm btn-outline-secondary">Enable 2FA</button>
-                            </div>
-                        </div>
+                        <button class="btn btn-sm btn-outline-secondary">Enable 2FA</button>
                     </div>
                 </div>
             </div>

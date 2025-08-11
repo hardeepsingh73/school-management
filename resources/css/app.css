@@ -7,10 +7,10 @@
       1. COLOR PALETTE (CSS Variables)
 --------------------------------------------------- */
 :root {
-  --color-primary: #1e40af;
+  --color-primary: #0c2556;
   /* Sapphire Blue */
-  --color-primary-hover: #2563eb;
-  --color-primary-active: #1e3a8a;
+  --color-primary-hover: #082153;
+  --color-primary-active: #021e55;
 
   --color-secondary: #e57300;
   /* Amber Orange */
@@ -716,4 +716,10 @@
 .btn-link:disabled,
 .btn-link.disabled {
   color: var(--color-light) !important;
+}
+.sidebar-layout .bi-chevron-down {
+  transition: 0.5s ease-in-out;
+}
+.sidebar-layout .collapsed .bi-chevron-down {
+  transform: rotate(-180deg);
 }
