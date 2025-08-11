@@ -13,27 +13,34 @@
     <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon" />
     <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}">
 
-    <!-- Your CSS and JS via Vite -->
+    <!-- Bootstrap & Vite Assets -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="font-sans bg-light min-vh-100 d-flex flex-column">  
+<body class="font-sans bg-light min-vh-100 d-flex flex-column">
 
-    <div class="d-flex flex-column min-vh-100">
+    <div class="d-flex flex-column flex-grow-1">
+
+        {{-- Top Navigation --}}
         @include('layouts.navigation')
 
         <div class="d-flex flex-grow-1">
+
+            {{-- Sidebar --}}
             @include('layouts.sidebar')
 
-            <!-- Main content area -->
-            <main id="main-content" class="flex-grow-1 p-3 p-md-4 overflow-auto" tabindex="-1">
+            {{-- Main Content --}}
+            <main id="main-content" class="flex-grow-1 p-4 bg-white shadow-sm rounded-3 overflow-auto" tabindex="-1">
+
+                {{-- Page Header --}}
                 @isset($header)
-                    <header class="mb-4">
-                        <div class="container-fluid">
-                            <h1 class="h3 mb-0">{{ $header }}</h1>
+                    <header class="border-bottom pb-3 mb-4">
+                        <div
+                            class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
+                            <h1 class="h4 mb-2 mb-md-0 fw-bold text-dark">{{ $header }}</h1>
                             @isset($breadcrumbs)
                                 <nav aria-label="breadcrumb">
-                                    <ol class="breadcrumb mb-0 mt-2">
+                                    <ol class="breadcrumb small mb-0">
                                         {{ $breadcrumbs }}
                                     </ol>
                                 </nav>
@@ -42,32 +49,37 @@
                     </header>
                 @endisset
 
-                <!-- Page content container with consistent padding -->
-                <div class="container-fluid">
-                    <!-- Flash messages -->
-                    @if(session()->has('success'))
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            {{ session('success') }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                {{-- Flash Messages --}}
+                <div class="container-fluid px-0">
+
+                    @if (session()->has('success'))
+                        <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+                            <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                aria-label="Close"></button>
                         </div>
                     @endif
 
-                    @if($errors->any())
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            <ul class="mb-0">
-                                @foreach($errors->all() as $error)
+                    @if ($errors->any())
+                        <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            <ul class="mb-0 ps-3">
+                                @foreach ($errors->all() as $error)
                                     <li>{{ $error }}</li>
                                 @endforeach
                             </ul>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                aria-label="Close"></button>
                         </div>
                     @endif
 
+                    {{-- Page Slot Content --}}
                     {{ $slot }}
                 </div>
             </main>
         </div>
 
+        {{-- Footer --}}
         @include('layouts.footer')
     </div>
 </body>

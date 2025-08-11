@@ -1,16 +1,27 @@
 <x-app-layout>
+    <!-- Page Header -->
     <x-slot name="header">
         <div class="d-flex justify-content-between align-items-center">
-            <h1 class="h3 mb-0">Profile</h1>
+            <h1 class="h3 mb-0"><i class="bi bi-person-circle me-2"></i> Profile</h1>
         </div>
     </x-slot>
+
+    <!-- Breadcrumbs -->
     <x-slot name="breadcrumbs">
-        <li class="breadcrumb-item"><a class ="btn-link" href="{{ route('dashboard') }}">Dashboard</a></li>
+        <li class="breadcrumb-item">
+            <a class="btn-link text-decoration-none" href="{{ route('dashboard') }}">
+                <i class="bi bi-house-door me-1"></i> Dashboard
+            </a>
+        </li>
         <li class="breadcrumb-item active" aria-current="page">Profile</li>
     </x-slot>
+
+    <!-- Profile Card -->
     <div class="row justify-content-center">
-        <div class="col-lg-8">
+        <div class="col-xxl-10">
             <div class="card shadow-sm border-0 rounded-3 overflow-hidden">
+
+                <!-- Card Header -->
                 <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom">
                     <h2 class="h5 mb-0 fw-semibold">Profile Information</h2>
                     <div class="d-flex gap-2">
@@ -18,7 +29,7 @@
                             <i class="bi bi-pencil-square me-1"></i> Edit Profile
                         </a>
                         @if (Auth::user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && !Auth::user()->hasVerifiedEmail())
-                            <form method="POST" action="{{ route('verification.send') }}">
+                            <form method="POST" action="{{ route('verification.send') }}" id="resendVerificationForm">
                                 @csrf
                                 <button type="submit" class="btn btn-sm btn-outline-warning">
                                     <i class="bi bi-envelope-exclamation me-1"></i> Resend Verification
@@ -28,26 +39,30 @@
                     </div>
                 </div>
 
+                <!-- Profile Body -->
                 <div class="card-body p-0">
                     <div class="row g-0">
-                        <!-- Profile Picture Column -->
-                        <div class="col-md-4 border-end p-4 d-flex flex-column align-items-center">
-                            <h3 class="h5 text-center mb-1">{{ Auth::user()->name }}</h3>
-                            <p class="text-muted text-center small mb-3">{{ Auth::user()->role ?? 'User' }}</p>
+                        <!-- Profile Picture & Quick Actions -->
+                        <div class="col-md-4 border-end p-4 d-flex flex-column align-items-center text-center">
+                            <div class="avatar avatar-lg mb-2">
+                                <i class="bi bi-person-circle text-secondary" style="font-size:4rem;"></i>
+                            </div>
+                            <h3 class="h5 mb-1">{{ Auth::user()->name }}</h3>
+                            <p class="text-muted small mb-3">{{ Auth::user()->role ?? 'User' }}</p>
                             <div class="d-flex gap-2">
-                                <button class="btn btn-sm btn-outline-secondary">
+                                <button class="btn btn-sm btn-outline-secondary" title="Share Profile">
                                     <i class="bi bi-share"></i>
                                 </button>
-                                <button class="btn btn-sm btn-outline-secondary">
+                                <button class="btn btn-sm btn-outline-secondary" title="Show QR Code">
                                     <i class="bi bi-qr-code"></i>
                                 </button>
                             </div>
                         </div>
 
-                        <!-- Profile Details Column -->
+                        <!-- Profile Details -->
                         <div class="col-md-8 p-4">
                             <dl class="row mb-0">
-                                <dt class="col-sm-4 text-muted text-truncate">Full Name</dt>
+                                <dt class="col-sm-4 text-muted">Full Name</dt>
                                 <dd class="col-sm-8">{{ Auth::user()->name }}</dd>
 
                                 <dt class="col-sm-4 text-muted">Email Address</dt>
@@ -86,9 +101,9 @@
                     </div>
                 </div>
 
-                <!-- Additional Profile Sections -->
-                <div class="card-footer bg-white border-top py-3">
-                    <ul class="nav nav-tabs card-header-tabs" id="profileTabs" role="tablist">
+                <!-- Footer with Tabs -->
+                <div class="card-footer bg-white border-top py-0">
+                    <ul class="nav nav-tabs card-header-tabs px-3 pt-3" id="profileTabs" role="tablist">
                         <li class="nav-item" role="presentation">
                             <button class="nav-link active" id="activity-tab" data-bs-toggle="tab"
                                 data-bs-target="#activity" type="button" role="tab">
@@ -104,24 +119,26 @@
                     </ul>
 
                     <div class="tab-content p-3" id="profileTabsContent">
+                        <!-- Activity Tab -->
                         <div class="tab-pane fade show active" id="activity" role="tabpanel">
                             <p class="text-muted mb-0">Recent user activity will appear here.</p>
                         </div>
+
+                        <!-- Security Tab -->
                         <div class="tab-pane fade" id="security" role="tabpanel">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <div>
                                     <h4 class="h6 mb-1">Password</h4>
                                     <p class="small text-muted mb-0">Last changed 3 months ago</p>
                                 </div>
+                                <button class="btn btn-sm btn-outline-primary">Change Password</button>
                             </div>
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
                                     <h4 class="h6 mb-1">Two-Factor Authentication</h4>
                                     <p class="small text-muted mb-0">Add extra security to your account</p>
                                 </div>
-                                <button class="btn btn-sm btn-outline-secondary">
-                                    Enable 2FA
-                                </button>
+                                <button class="btn btn-sm btn-outline-secondary">Enable 2FA</button>
                             </div>
                         </div>
                     </div>
@@ -130,4 +147,31 @@
         </div>
     </div>
 
+    <!-- SweetAlert2 Script for Resend Verification -->
+    <x-slot name="script">
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const resendForm = document.getElementById('resendVerificationForm');
+                if (resendForm) {
+                    resendForm.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Resend Verification Email?',
+                            text: 'We will send a new verification email to your registered address.',
+                            showCancelButton: true,
+                            confirmButtonText: 'Yes, send it',
+                            cancelButtonText: 'Cancel',
+                            confirmButtonColor: '#0d6efd',
+                            cancelButtonColor: '#6c757d'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                resendForm.submit();
+                            }
+                        });
+                    });
+                }
+            });
+        </script>
+    </x-slot>
 </x-app-layout>
