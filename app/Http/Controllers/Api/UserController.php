@@ -16,7 +16,6 @@ class UserController extends Controller
     public static function middleware(): array
     {
         return [
-            new Middleware('auth:api'),
             new Middleware('permission:view users', only: ['index']),
             new Middleware('permission:create users', only: ['create', 'store']),
             new Middleware('permission:delete users', only: ['destroy']),
