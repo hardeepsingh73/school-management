@@ -117,23 +117,4 @@
             </form>
         </div>
     </div>
-
-    <!-- Optional SweetAlert2 Toast on Save -->
-    @if (session('status') === 'role-saved')
-        <x-slot name="script">
-            <script>
-                document.addEventListener('DOMContentLoaded', () => {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success',
-                        text: 'Role has been {{ isset($role) ? 'updated' : 'created' }} successfully.',
-                        toast: true,
-                        position: 'top-end',
-                        timer: 3000,
-                        showConfirmButton: false
-                    });
-                });
-            </script>
-        </x-slot>
-    @endif
 </x-app-layout>

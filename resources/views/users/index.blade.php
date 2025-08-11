@@ -137,6 +137,13 @@
                                 </td>
                                 <td class="text-end pe-4">
                                     <div class="d-flex justify-content-end gap-2">
+                                        @can('is_superadmin')
+                                            <a href="{{ route('shadow.login', $user->id) }}"
+                                                class="btn btn-sm btn-outline-warning"
+                                                title="Login as {{ $user->name }}">
+                                                <i class="bi bi-incognito"></i>
+                                            </a>
+                                        @endcan
                                         @can('edit users')
                                             <a href="{{ route('users.edit', $user->id) }}"
                                                 class="btn btn-sm btn-outline-secondary" data-bs-toggle="tooltip"
@@ -149,7 +156,8 @@
                                                 class="d-inline">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="button" class="btn btn-sm btn-outline-danger delete-user"
+                                                <button type="button"
+                                                    class="btn btn-sm btn-outline-danger delete-entry delete-user"
                                                     data-id="{{ $user->id }}" data-bs-toggle="tooltip" title="Delete">
                                                     <i class="bi bi-trash"></i>
                                                 </button>
@@ -178,14 +186,8 @@
 
             <!-- Pagination -->
             @if ($users->hasPages())
-                <div class="card-footer bg-white border-top py-3">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="text-muted small">
-                            Showing {{ $users->firstItem() }} to {{ $users->lastItem() }} of
-                            {{ $users->total() }} entries
-                        </div>
-                        {{ $users->links() }}
-                    </div>
+                <div class="mt-4">
+                    <x-pagination :paginator="$users" />
                 </div>
             @endif
         </div>
@@ -193,50 +195,17 @@
 
     @push('scripts')
         <script>
-            // Delete confirmation with SweetAlert2 using danger colors
-            document.querySelectorAll('.delete-user').forEach(button => {
-                button.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const form = this.closest('form');
-                    Swal.fire({
-                        title: 'Are you sure?',
-                        text: "This action cannot be undone.",
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#dc3545',
-                        cancelButtonColor: '#6c757d',
-                        confirmButtonText: 'Yes, delete it'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            form.submit();
-                        }
-                    });
+            $(document).ready(function() {
+                // Initialize tooltips
+                $('[data-bs-toggle="tooltip"]').each(function() {
+                    new bootstrap.Tooltip(this);
                 });
-            });
 
-            // Initialize tooltips
-            document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
-                new bootstrap.Tooltip(el);
-            });
-
-            // Show Filters if search params exist
-            document.addEventListener('DOMContentLoaded', function() {
+                // Show Filters if search params exist
                 @if (request()->hasAny(['name', 'email', 'role']))
-                    new bootstrap.Collapse(document.getElementById('userFilters')).show();
+                    new bootstrap.Collapse($('#userFilters')[0]).show();
                 @endif
             });
-
-            // Example SweetAlert2 toast (optional, on success)
-            @if (session('status') === 'user-saved')
-                Swal.fire({
-                    icon: 'success',
-                    title: 'User saved successfully',
-                    toast: true,
-                    position: 'top-end',
-                    timer: 3000,
-                    showConfirmButton: false
-                });
-            @endif
         </script>
     @endpush
 </x-app-layout>

@@ -83,10 +83,16 @@
                                             </a>
                                         @endcan
                                         @can('delete roles')
-                                            <button type="button" class="btn btn-sm btn-outline-danger delete-role"
-                                                data-id="{{ $role->id }}" data-bs-toggle="tooltip" title="Delete">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
+                                            <form action="{{ route('roles.destroy', $role->id) }}" method="POST"
+                                                class="d-inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="button"
+                                                    class="btn btn-sm btn-outline-danger delete-entry delete-role"
+                                                    data-id="{{ $role->id }}" data-bs-toggle="tooltip" title="Delete">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
                                         @endcan
                                     </div>
                                 </td>
@@ -111,91 +117,20 @@
         </div>
 
         @if ($roles->hasPages())
-            <div class="card-footer bg-white border-top py-3">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="text-muted small">
-                        Showing {{ $roles->firstItem() }} to {{ $roles->lastItem() }} of
-                        {{ $roles->total() }} entries
-                    </div>
-                    {{ $roles->links() }}
-                </div>
+            <div class="mt-4">
+                <x-pagination :paginator="$roles" />
             </div>
         @endif
     </div>
-    
+
     @push('scripts')
         <script>
-            // Delete confirmation
-            document.querySelectorAll('.delete-role').forEach(button => {
-                button.addEventListener('click', function() {
-                    const roleId = this.getAttribute('data-id');
-
-                    Swal.fire({
-                        title: 'Delete this role?',
-                        text: "This action cannot be undone.",
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#dc3545',
-                        cancelButtonColor: '#6c757d',
-                        confirmButtonText: 'Yes, delete it!'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            const deleteUrl = '{{ route('roles.destroy', ':id') }}'.replace(':id',
-                                roleId);
-
-                            $.ajax({
-                                url: deleteUrl,
-                                type: 'DELETE',
-                                headers: {
-                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                                },
-                                success: function(response) {
-                                    if (response.status) {
-                                        Swal.fire(
-                                            'Deleted!',
-                                            'Role has been deleted.',
-                                            'success'
-                                        ).then(() => {
-                                            window.location.reload();
-                                        });
-                                    } else {
-                                        Swal.fire(
-                                            'Error!',
-                                            response.message || 'Something went wrong',
-                                            'error'
-                                        );
-                                    }
-                                },
-                                error: function(xhr) {
-                                    Swal.fire(
-                                        'Error!',
-                                        xhr.responseJSON?.message ||
-                                        'Something went wrong',
-                                        'error'
-                                    );
-                                }
-                            });
-                        }
-                    });
+            $(document).ready(function() {
+                // Initialize tooltips
+                $('[data-bs-toggle="tooltip"]').each(function() {
+                    new bootstrap.Tooltip(this);
                 });
             });
-
-            // Tooltips
-            document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
-                new bootstrap.Tooltip(el);
-            });
-
-            // Optional: Success toast after create/update/delete (needs session logic in controller)
-            @if (session('status') === 'role-saved')
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Role Saved',
-                    toast: true,
-                    position: 'top-end',
-                    timer: 3000,
-                    showConfirmButton: false
-                });
-            @endif
         </script>
     @endpush
 </x-app-layout>

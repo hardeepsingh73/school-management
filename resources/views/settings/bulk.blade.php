@@ -114,46 +114,40 @@
 
     <x-slot name="script">
         <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                if (typeof $ !== 'undefined') {
-                    $(document).ready(function() {
-                        // Initialize Bootstrap tabs
-                        $('button[data-bs-toggle="tab"]').on('click', function() {
-                            const tabTrigger = new bootstrap.Tab(this);
-                            tabTrigger.show();
-                        });
+            $(function() {
+                // Initialize Bootstrap tabs (jQuery version)
+                $('button[data-bs-toggle="tab"]').click(function() {
+                    const tabTrigger = new bootstrap.Tab(this);
+                    tabTrigger.show();
+                });
 
-                        // Toggle boolean labels on change
-                        $('.form-check-input[type="checkbox"]').on('change', function() {
-                            if ($(this).attr('name')?.startsWith('settings[')) {
-                                const label = $(this).next('label');
-                                label.text($(this).is(':checked') ? 'Enabled' : 'Disabled');
-                            }
-                        });
+                // Toggle boolean labels on change
+                $('.form-check-input[type="checkbox"]').change(function() {
+                    if ($(this).attr('name')?.startsWith('settings[')) {
+                        $(this).next('label').text($(this).is(':checked') ? 'Enabled' : 'Disabled');
+                    }
+                });
 
-                        // Preview image before upload
-                        $('input[type="file"][accept="image/*"]').on('change', function() {
-                            const file = this.files[0];
-                            if (file) {
-                                const reader = new FileReader();
-                                const container = $(this).closest('.image-upload-container');
+                // Preview image before upload
+                $('input[type="file"][accept="image/*"]').change(function() {
+                    const file = this.files[0];
+                    if (!file) return;
 
-                                reader.onload = function(e) {
-                                    container.find('.image-preview').remove();
+                    const reader = new FileReader();
+                    const container = $(this).closest('.image-upload-container');
 
-                                    container.append(`
-                                <div class="image-preview mt-2">
-                                    <p class="small text-muted mb-1">New Image Preview:</p>
-                                    <img src="${e.target.result}" alt="Preview" class="img-thumbnail mb-2" style="max-height: 100px;">
-                                </div>
-                            `);
-                                }
+                    reader.onload = function(e) {
+                        container.find('.image-preview').remove();
+                        container.append(`
+                <div class="image-preview mt-2">
+                    <p class="small text-muted mb-1">New Image Preview:</p>
+                    <img src="${e.target.result}" alt="Preview" class="img-thumbnail mb-2" style="max-height: 100px;">
+                </div>
+            `);
+                    };
 
-                                reader.readAsDataURL(file);
-                            }
-                        });
-                    });
-                }
+                    reader.readAsDataURL(file);
+                });
             });
         </script>
     </x-slot>

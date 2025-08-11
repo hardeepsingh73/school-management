@@ -22,7 +22,7 @@
         @include('layouts.navigation')
 
         <div class="d-flex flex-grow-1">
-            <main class="flex-grow-1 p-4">
+            <main class="flex-grow-1">
                 {{ $slot }}
             </main>
         </div>
@@ -31,23 +31,19 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        $(document).ready(function() {
             // Toggle password visibility for both fields
-            document.querySelectorAll('.toggle-password').forEach(function(button) {
-                button.addEventListener('click', function() {
-                    const input = this.closest('.input-group').querySelector('input');
-                    const icon = this.querySelector('i');
+            $('.toggle-password').on('click', function() {
+                const $input = $(this).closest('.input-group').find('input');
+                const $icon = $(this).find('i');
 
-                    if (input.type === 'password') {
-                        input.type = 'text';
-                        icon.classList.remove('bi-eye');
-                        icon.classList.add('bi-eye-slash');
-                    } else {
-                        input.type = 'password';
-                        icon.classList.remove('bi-eye-slash');
-                        icon.classList.add('bi-eye');
-                    }
-                });
+                if ($input.attr('type') === 'password') {
+                    $input.attr('type', 'text');
+                    $icon.removeClass('bi-eye').addClass('bi-eye-slash');
+                } else {
+                    $input.attr('type', 'password');
+                    $icon.removeClass('bi-eye-slash').addClass('bi-eye');
+                }
             });
         });
     </script>

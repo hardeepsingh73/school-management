@@ -27,7 +27,7 @@
                 <p class="text-muted mb-0 small">Browse recent application error records</p>
             </div>
             @can('clear error logs')
-                <form id="clear-error-logs-form" action="{{ route('error-logs.clear') }}" method="POST" class="mb-0">
+                <form id="clear-error-logs-form" action="{{ route('error-logs.clear') }}" method="POST" class="mb-0 clearLogs">
                     @csrf
                     <button type="submit" class="btn btn-danger btn-sm" id="clearErrorLogsBtn">
                         <i class="bi bi-trash3-fill me-1"></i> Clear Logs
@@ -80,32 +80,4 @@
             @endif
         </div>
     </div>
-
-    <!-- SweetAlert2 Script -->
-    <x-slot name="script">
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const form = document.getElementById('clear-error-logs-form');
-                if (form) {
-                    form.addEventListener('submit', function(e) {
-                        e.preventDefault();
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Clear Error Logs?',
-                            text: 'Are you sure you want to clear all error logs? This action cannot be undone.',
-                            showCancelButton: true,
-                            confirmButtonText: 'Yes, clear logs',
-                            cancelButtonText: 'Cancel',
-                            confirmButtonColor: '#dc3545',
-                            cancelButtonColor: '#6c757d'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                form.submit();
-                            }
-                        });
-                    });
-                }
-            });
-        </script>
-    </x-slot>
 </x-app-layout>

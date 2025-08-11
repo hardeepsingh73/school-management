@@ -2,41 +2,79 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\DB;
+use Spatie\Permission\PermissionRegistrar;
 
 class RolesAndPermissionsSeeder extends Seeder
 {
     /**
      * Run the database seeds.
+     *
+     * This seeds:
+     * - All application permissions
+     * - Superadmin (all permissions), Admin (restricted), User (basic)
+     *
+     * @return void
      */
     public function run(): void
     {
-        // Reset cached roles and permissions
-        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+        // Reset cached roles & permissions
+        app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
-        // Create permissions
-        $permissions = [
-            'view dashboard',
-            'manage users',
-            'manage roles',
-            'manage permissions',
-        ];
+        DB::transaction(function () {
+            // ----------------------
+            // 1️⃣ Create Permissions
+            // ----------------------
+            $permissions = [
+                // User management
+                'create users', 'delete users', 'edit users', 'view users',
 
-        foreach ($permissions as $permission) {
-            Permission::create(['name' => $permission]);
-        }
+                // Role management
+                'create roles', 'delete roles', 'edit roles', 'view roles',
 
-        // Create roles and assign permissions
-        $role = Role::create(['name' => 'admin'])
-            ->givePermissionTo(Permission::all());
+                // Permission management
+                'create permissions', 'delete permissions', 'edit permissions', 'view permissions',
 
+                // Settings
+                'create settings', 'delete settings', 'edit settings', 'view settings',
 
-        Role::create(['name' => 'user'])
-            ->givePermissionTo([
+                // Logs
+                'view activity logs', 'clear activity logs',
+                'view error logs', 'clear error logs',
+                'view login history', 'clear login history',
+
+                // Basic
                 'view dashboard',
+            ];
+
+            foreach ($permissions as $permission) {
+                Permission::firstOrCreate(['name' => $permission]);
+            }
+
+            // ----------------------
+            // 2️⃣ Create Roles
+            // ----------------------
+
+            // Super Admin - all permissions
+            $superadmin = Role::firstOrCreate(['name' => 'superadmin']);
+            $superadmin->syncPermissions(Permission::all());
+
+            // Admin - restricted permissions
+            $admin = Role::firstOrCreate(['name' => 'admin']);
+            $admin->syncPermissions([
+                'create users', 'delete users', 'edit users', 'view users',
+                'view dashboard', 'view activity logs',
+                'view error logs', 'view login history',
             ]);
+
+            // Regular User - minimal permissions
+            $user = Role::firstOrCreate(['name' => 'user']);
+            $user->syncPermissions(['view dashboard']);
+        });
+
+        $this->command->info('✅ Roles and permissions seeded successfully.');
     }
 }

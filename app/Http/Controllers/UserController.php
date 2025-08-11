@@ -19,32 +19,57 @@ use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller implements HasMiddleware
 {
+    /**
+     * The SearchService for applying query filters and searching users.
+     *
+     * @var \App\Services\SearchService
+     */
     protected $searchService;
 
+    /**
+     * Inject dependencies.
+     *
+     * @param \App\Services\SearchService $searchService
+     */
     public function __construct(SearchService $searchService)
     {
         $this->searchService = $searchService;
     }
 
+    /**
+     * Define middleware permissions for specific controller actions.
+     *
+     * Note: The 'edit users' permission is checked via Gate/Policy in edit/update.
+     *
+     * @return \Illuminate\Routing\Controllers\Middleware[]
+     */
     public static function middleware(): array
     {
         return [
             new Middleware('permission:view users', only: ['index']),
-            new Middleware('permission:create users', only: ['create', 'store']), // Enable create permission
-            new Middleware('permission:delete users', only: ['destroy']), // Enable delete permission
-            // The 'edit users' permission is handled by Gate/Policy in edit/update methods
+            new Middleware('permission:create users', only: ['create', 'store']),
+            new Middleware('permission:delete users', only: ['destroy']),
         ];
     }
 
     /**
-     * Display a listing of the resource.
+     * Display a paginated list of users with optional filtering by role/name/email.
+     *
+     * Uses RoleDataHelper to enforce role-based visibility restrictions.
+     * Applies search filters via SearchService.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\View\View
      */
     public function index(Request $request)
     {
+        // Fetch all roles for filter dropdown or display
         $roles = Role::orderBy('name', 'ASC')->get();
 
-        // Use the RoleDataHelper to get authorized users
+        // Get query builder with role-based user visibility from RoleDataHelper
         $query = RoleDataHelper::users(true);
+
+        // Apply search/filter for name, email, and role relationship via SearchService
         $users = $this->searchService->search(
             $query,
             [
@@ -57,45 +82,49 @@ class UserController extends Controller implements HasMiddleware
                     'request_key' => 'role'
                 ]
             ],
-            request()
+            $request
         );
 
+        // Order by newest and paginate results (10 per page)
         $users = $users->latest()->paginate(10);
-        return view('users.index', [
-            'users' => $users,
-            'roles' => $roles,
-        ]);
+
+        return view('users.index', compact('users', 'roles'));
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Show the form for creating a new user.
+     *
+     * Roles that the current user should not see (e.g., super admins) are excluded.
+     *
+     * @return \Illuminate\View\View
      */
     public function create()
     {
-        $excludedRoles = [
-            // Settings::get('role_client', 'client'),
-        ];
+        $excludedRoles = [];
 
+        // Add superadmin role to excluded roles if current user is not superadmin
         if (!auth()->user()->hasRole(Settings::get('role_super_admin', 'superadmin'))) {
             $excludedRoles[] = Settings::get('role_super_admin', 'superadmin');
         }
 
+        // Fetch roles excluding the above
         $roles = Role::whereNotIn('name', $excludedRoles)
             ->orderBy('name', 'ASC')
             ->get();
 
-        return view('users.form', [
-            'roles' => $roles,
-        ]);
+        return view('users.form', compact('roles'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created user in the database.
+     *
+     * Validates input, hashes password, assigns role, and uses transaction to ensure consistency.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request)
     {
-        $selectedRole = $request->input('roles');
-
         $rules = [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
@@ -118,7 +147,8 @@ class UserController extends Controller implements HasMiddleware
                 'password' => Hash::make($request->password),
             ]);
 
-            $user->assignRole($selectedRole);
+            // Assign role to the user
+            $user->assignRole($request->input('roles'));
 
             DB::commit();
 
@@ -126,29 +156,27 @@ class UserController extends Controller implements HasMiddleware
         } catch (\Exception $e) {
             DB::rollBack();
 
-            return redirect()->route('users.create')->withInput()->withErrors(['error' => 'Something went wrong. ' . $e->getMessage()]);
+            // Return with error message and input preserved
+            return redirect()->route('users.create')
+                ->withInput()
+                ->withErrors(['error' => 'Something went wrong: ' . $e->getMessage()]);
         }
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        // No implementation provided, typically used for showing a single user's details
-    }
-
-    /**
-     * Show the form for editing the specified resource.
+     * Show the form for editing a user.
+     *
+     * Authorization enforced via UserPolicy::manage to allow only owners or authorized users.
+     * Excludes super admin role from roles list unless current user is super admin.
+     *
+     * @param \App\Models\User $user
+     * @return \Illuminate\View\View
      */
     public function edit(User $user)
     {
-        // Policy check: Only allow if editing self OR has 'edit users' permission
-        // Ensure your UserPolicy has a 'manage' method that correctly handles this.
         $this->authorize('manage', $user);
-        $excludedRoles = [
-            // Settings::get('role_client', 'client'),
-        ];
+
+        $excludedRoles = [];
 
         if (!auth()->user()->hasRole(Settings::get('role_super_admin', 'superadmin'))) {
             $excludedRoles[] = Settings::get('role_super_admin', 'superadmin');
@@ -158,25 +186,27 @@ class UserController extends Controller implements HasMiddleware
             ->orderBy('name', 'ASC')
             ->get();
 
-        // When editing, get the current user's role name (assuming single role)
-        $currentRoleName = $user->getRoleNames()->first(); // Spatie returns Collection of role names
+        // Assume single role; get current user's role name for form selection
+        $currentRoleName = $user->getRoleNames()->first();
 
-        return view('users.form', [
-            'user' => $user,
-            'roles' => $roles,
-            'currentRoleName' => $currentRoleName, // Pass the current role name for radio button selection
-        ]);
+        return view('users.form', compact('user', 'roles', 'currentRoleName'));
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified user.
+     *
+     * Validates inputs, including unique email with ignoring current user.
+     * Password update is optional.
+     * Uses transaction and policy authorization.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param string $id
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function update(Request $request, string $id)
     {
         $user = User::findOrFail($id);
         $this->authorize('manage', $user);
-
-        $selectedRole = $request->input('roles');
 
         $rules = [
             'name' => 'required|string|max:255',
@@ -185,7 +215,6 @@ class UserController extends Controller implements HasMiddleware
             'roles' => ['required', 'string', Rule::exists('roles', 'name')],
         ];
 
-
         $validated = $request->validate($rules);
 
         DB::beginTransaction();
@@ -193,12 +222,15 @@ class UserController extends Controller implements HasMiddleware
         try {
             $user->name = $validated['name'];
             $user->email = $validated['email'];
+
             if (!empty($validated['password'])) {
                 $user->password = Hash::make($validated['password']);
             }
+
             $user->save();
 
-            $user->syncRoles([$selectedRole]);
+            // Sync new role(s)
+            $user->syncRoles([$validated['roles']]);
 
             DB::commit();
 
@@ -206,32 +238,39 @@ class UserController extends Controller implements HasMiddleware
         } catch (\Exception $e) {
             DB::rollBack();
 
-            return redirect()->route('users.edit', $user->id)->withInput()->withErrors(['error' => 'Something went wrong. ' . $e->getMessage()]);
+            return redirect()->route('users.edit', $user->id)
+                ->withInput()
+                ->withErrors(['error' => 'Something went wrong: ' . $e->getMessage()]);
         }
     }
 
-
     /**
-     * Remove the specified resource from storage.
+     * Remove a user.
+     *
+     * Protects specific user IDs from deletion (e.g., system admins).
+     * Uses Gate to authorize deletion.
+     *
+     * @param \App\Models\User $user
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(User $user): JsonResponse
     {
-        // Preventing deletion of specific IDs (e.g., system accounts)
-        if (in_array($user->id, [1, 4])) { // Consider making these IDs configurable or using roles
+        // Prevent deletion of critical/system accounts
+        if (in_array($user->id, [1, 4])) {
             return response()->json([
                 'status' => false,
                 'message' => 'This user cannot be deleted.',
             ], 403);
         }
 
-        // Policy check: This will check the 'delete' method in your UserPolicy
+        // Authorization check via policy or Gate
         if (Gate::denies('delete', $user)) {
-            // You might also use $this->authorize('delete', $user); which throws an exception
             return response()->json([
                 'status' => false,
                 'message' => 'Unauthorized action',
             ], 403);
         }
+
         $this->authorize('manage', $user);
 
         $user->delete();

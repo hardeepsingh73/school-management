@@ -5,55 +5,87 @@ namespace App\Http\Controllers;
 use App\Models\ActivityLog;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ActivityLogController extends Controller
 {
+    /**
+     * Display a paginated list of activity logs with optional filters.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     *        Optional query params:
+     *        - user   : Filter by causer_id
+     *        - type   : Filter by subject_type
+     *        - event  : Filter by event name
+     *
+     * @return \Illuminate\View\View
+     */
     public function index(Request $request)
     {
-        $query = ActivityLog::with(['subject', 'causer'])
-            ->latest();
+        $query = ActivityLog::with(['subject', 'causer'])->latest();
 
-        if ($request->has('user')) {
+        // Apply filters if provided
+        if ($request->filled('user')) {
             $query->where('causer_id', $request->user);
         }
 
-        if ($request->has('type')) {
+        if ($request->filled('type')) {
             $query->where('subject_type', $request->type);
         }
 
-        if ($request->has('event')) {
+        if ($request->filled('event')) {
             $query->where('event', $request->event);
         }
 
+        // Paginate results
         $logs = $query->paginate(10);
 
         return view('activity-logs.index', compact('logs'));
     }
 
+    /**
+     * Show details of a specific activity log.
+     *
+     * Route Model Binding automatically fetches the ActivityLog instance.
+     *
+     * @param  \App\Models\ActivityLog  $activityLog
+     * @return \Illuminate\View\View
+     */
     public function show(ActivityLog $activityLog)
     {
         return view('activity-logs.show', compact('activityLog'));
     }
-    public function export(Request $request)
+
+    /**
+     * Export filtered activity logs as a CSV file download.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Symfony\Component\HttpFoundation\StreamedResponse
+     */
+    public function export(Request $request): StreamedResponse
     {
+        // Build the query with optional filters
         $logs = ActivityLog::query()
-            ->when($request->has('user'), fn($q) => $q->where('causer_id', $request->user))
-            ->when($request->has('type'), fn($q) => $q->where('subject_type', $request->type))
-            ->when($request->has('event'), fn($q) => $q->where('event', $request->event))
+            ->when($request->filled('user'), fn($q) => $q->where('causer_id', $request->user))
+            ->when($request->filled('type'), fn($q) => $q->where('subject_type', $request->type))
+            ->when($request->filled('event'), fn($q) => $q->where('event', $request->event))
             ->latest()
             ->get();
 
+        // Set CSV filename with timestamp
         $fileName = 'activity_logs_' . now()->format('Y-m-d_H-i-s') . '.csv';
 
+        // Define HTTP headers for file download
         $headers = [
-            'Content-Type' => 'text/csv',
+            'Content-Type'        => 'text/csv',
             'Content-Disposition' => "attachment; filename={$fileName}",
         ];
 
+        // Stream CSV output to the browser
         $callback = function () use ($logs) {
             $file = fopen('php://output', 'w');
 
-            // Add CSV headers
+            // CSV column headers
             fputcsv($file, [
                 'ID',
                 'Event',
@@ -69,7 +101,7 @@ class ActivityLogController extends Controller
                 'Created At'
             ]);
 
-            // Add data rows
+            // Write log data rows
             foreach ($logs as $log) {
                 fputcsv($file, [
                     $log->id,
@@ -92,13 +124,20 @@ class ActivityLogController extends Controller
 
         return response()->stream($callback, 200, $headers);
     }
+
     /**
-     * Clear all activity logs.
+     * Clear all activity logs from the database.
+     *
+     * ⚠ Use with caution! This action is irreversible.
+     *
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function clear(): RedirectResponse
     {
         ActivityLog::truncate();
 
-        return redirect()->route('activity-logs.index')->with('success', 'All activity logs have been cleared.');
+        return redirect()
+            ->route('activity-logs.index')
+            ->with('success', 'All activity logs have been cleared.');
     }
 }

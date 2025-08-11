@@ -46,7 +46,7 @@
                         <i class="bi bi-person-circle text-secondary" style="font-size:4rem;"></i>
                     </div>
                     <h3 class="h5 mb-1">{{ Auth::user()->name }}</h3>
-                    <p class="text-muted small mb-3">{{ Auth::user()->role ?? 'User' }}</p>
+                    <p class="text-muted small mb-3">{{ Auth::user()->getRoleNames()->first() ?? 'User' }}</p>
                     <div class="d-flex gap-2">
                         <button class="btn btn-sm btn-outline-secondary" title="Share Profile">
                             <i class="bi bi-share"></i>
@@ -113,6 +113,12 @@
                         <i class="bi bi-shield-lock me-1"></i> Security
                     </button>
                 </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="login-history-tab" data-bs-toggle="tab" data-bs-target="#login-history"
+                        type="button" role="tab">
+                        <i class="bi bi-box-arrow-in-right me-1"></i> Login History
+                    </button>
+                </li>
             </ul>
 
             <div class="tab-content p-3" id="profileTabsContent">
@@ -120,7 +126,6 @@
                 <div class="tab-pane fade show active" id="activity" role="tabpanel">
                     <p class="text-muted mb-0">Recent user activity will appear here.</p>
                 </div>
-
                 <!-- Security Tab -->
                 <div class="tab-pane fade" id="security" role="tabpanel">
                     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -138,6 +143,57 @@
                         <button class="btn btn-sm btn-outline-secondary">Enable 2FA</button>
                     </div>
                 </div>
+                <!-- Login History Tab -->
+                <!-- Login History Tab -->
+                <div class="tab-pane fade" id="login-history" role="tabpanel">
+                    @if ($user->loginHistory && $user->loginHistory->count())
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Date/Time</th>
+                                        <th>IP Address</th>
+                                        <th>User Agent</th>
+                                        <th>Login At</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($user->loginHistory->sortByDesc('created_at') as $history)
+                                        <tr>
+                                            <td>
+                                                {{ $history->created_at->format('M j, Y g:i a') }}<br>
+                                                <small
+                                                    class="text-muted">{{ $history->created_at->diffForHumans() }}</small>
+                                            </td>
+                                            <td>{{ $history->ip_address }}</td>
+                                            <td>
+                                                {{ $history->user_agent }}
+                                            </td>
+                                            <td>
+                                                {{ $history->login_at }}
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <small class="text-muted">
+                                Showing {{ $user->loginHistory->count() }} recent logins
+                            </small>
+                            @if ($user->loginHistory->count() >= 10)
+                                <button class="btn btn-sm btn-outline-primary">
+                                    View Full History
+                                </button>
+                            @endif
+                        </div>
+                    @else
+                        <div class="alert alert-info mb-0">
+                            <i class="bi bi-info-circle"></i> No login history available
+                        </div>
+                    @endif
+                </div>
             </div>
         </div>
     </div>
@@ -145,10 +201,10 @@
     <!-- SweetAlert2 Script for Resend Verification -->
     <x-slot name="script">
         <script>
-            document.addEventListener('DOMContentLoaded', () => {
-                const resendForm = document.getElementById('resendVerificationForm');
-                if (resendForm) {
-                    resendForm.addEventListener('submit', function(e) {
+            $(function() {
+                const $resendForm = $('#resendVerificationForm');
+                if ($resendForm.length) {
+                    $resendForm.on('submit', function(e) {
                         e.preventDefault();
                         Swal.fire({
                             icon: 'warning',
@@ -161,7 +217,7 @@
                             cancelButtonColor: '#6c757d'
                         }).then((result) => {
                             if (result.isConfirmed) {
-                                resendForm.submit();
+                                $resendForm.off('submit').trigger('submit');
                             }
                         });
                     });

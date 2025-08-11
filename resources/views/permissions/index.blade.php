@@ -83,10 +83,16 @@
                                             </a>
                                         @endcan
                                         @can('delete permissions')
-                                            <button type="button" class="btn btn-sm btn-outline-danger delete-permission"
-                                                data-id="{{ $permission->id }}" data-bs-toggle="tooltip" title="Delete">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
+                                            <form action="{{ route('permissions.destroy', $permission->id) }}"
+                                                method="POST" class="d-inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="button"
+                                                    class="btn btn-sm btn-outline-danger delete-entry delete-permission"
+                                                    data-id="{{ $permission->id }}" data-bs-toggle="tooltip" title="Delete">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
                                         @endcan
                                     </div>
                                 </td>
@@ -111,77 +117,20 @@
         </div>
 
         @if ($permissions->hasPages())
-            <div class="card-footer bg-white border-top py-3">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="text-muted small">
-                        Showing {{ $permissions->firstItem() }} to {{ $permissions->lastItem() }} of
-                        {{ $permissions->total() }} entries
-                    </div>
-                    {{ $permissions->links() }}
-                </div>
+            <div class="mt-4">
+                <x-pagination :paginator="$permissions" />
             </div>
         @endif
     </div>
 
     @push('scripts')
         <script>
-            // Delete confirmation
-            document.querySelectorAll('.delete-permission').forEach(button => {
-                button.addEventListener('click', function() {
-                    const permissionId = this.getAttribute('data-id');
-
-                    Swal.fire({
-                        title: 'Are you sure?',
-                        text: "You won't be able to revert this!",
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#dc3545',
-                        cancelButtonColor: '#6c757d',
-                        confirmButtonText: 'Yes, delete it!'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            const deleteUrl = '{{ route('permissions.destroy', ':id') }}'.replace(
-                                ':id', permissionId);
-
-                            fetch(deleteUrl, {
-                                    method: 'DELETE',
-                                    headers: {
-                                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                                    }
-                                })
-                                .then(res => res.json())
-                                .then(response => {
-                                    if (response.status) {
-                                        Swal.fire('Deleted!', 'Permission has been deleted.',
-                                                'success')
-                                            .then(() => window.location.reload());
-                                    } else {
-                                        Swal.fire('Error!', response.message ||
-                                            'Something went wrong', 'error');
-                                    }
-                                })
-                                .catch(() => Swal.fire('Error!', 'Something went wrong', 'error'));
-                        }
-                    });
+            $(function() {
+                // Initialize tooltips
+                $('[data-bs-toggle="tooltip"]').each(function() {
+                    new bootstrap.Tooltip(this);
                 });
             });
-
-            // Initialize tooltips
-            document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
-                new bootstrap.Tooltip(el);
-            });
-
-            // Success toast after create/update
-            @if (session('status') === 'permission-saved')
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Permission Saved',
-                    toast: true,
-                    position: 'top-end',
-                    timer: 3000,
-                    showConfirmButton: false
-                });
-            @endif
         </script>
     @endpush
 </x-app-layout>

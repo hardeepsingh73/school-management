@@ -31,7 +31,7 @@
                     <form id="clear-login-history-form" action="{{ route('login-history.clear') }}" method="POST"
                         class="mb-0">
                         @csrf
-                        <button type="submit" class="btn btn-danger btn-sm">
+                        <button type="submit" class="btn btn-danger btn-sm clearLogs">
                             <i class="bi bi-trash3-fill me-1"></i> Clear Logs
                         </button>
                     </form>
@@ -136,38 +136,4 @@
             @endif
         </div>
     </div>
-
-    <!-- Scripts -->
-    <x-slot name="script">
-        <script>
-            // Auto show search if filters are used
-            document.addEventListener('DOMContentLoaded', () => {
-                @if (request()->hasAny(['user_id', 'ip_address', 'login_at']))
-                    new bootstrap.Collapse(document.getElementById('listSearchForm'), {
-                        show: true
-                    });
-                @endif
-
-                // SweetAlert2 confirmation for clear logs
-                const clearForm = document.getElementById('clear-login-history-form');
-                if (clearForm) {
-                    clearForm.addEventListener('submit', function(e) {
-                        e.preventDefault();
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Clear Login History?',
-                            text: 'Are you sure you want to clear all login history logs? This action cannot be undone.',
-                            showCancelButton: true,
-                            confirmButtonText: 'Yes, clear logs',
-                            cancelButtonText: 'Cancel',
-                            confirmButtonColor: '#dc3545',
-                            cancelButtonColor: '#6c757d',
-                        }).then((result) => {
-                            if (result.isConfirmed) form.submit();
-                        });
-                    });
-                }
-            });
-        </script>
-    </x-slot>
 </x-app-layout>

@@ -18,6 +18,7 @@
     @isset($style)
         {{ $style }}
     @endisset
+    @stack('style')
 </head>
 
 <body class="font-sans bg-light min-vh-100 d-flex flex-column">
@@ -88,10 +89,12 @@
 
         {{-- Footer --}}
         @include('layouts.footer')
-        @isset($script)
-            {{ $script }}
-        @endisset
     </div>
+    @isset($script)
+        {{ $script }}
+    @endisset
+    @stack('scripts')
+
 </body>
 
 </html>

@@ -2,25 +2,42 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
+/**
+ * Class DatabaseSeeder
+ *
+ * This is the root seeder class for the application.
+ * It is executed when running `php artisan db:seed`
+ * and calls other seeder classes in the required order.
+ */
 class DatabaseSeeder extends Seeder
 {
     /**
      * Seed the application's database.
+     *
+     * Here we can:
+     * - Call additional seeders
+     * - Optionally create test/demo data with factories
+     *
+     * @return void
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // Call individual seeders in the correct sequence
         $this->call([
-            RolesAndPermissionsSeeder::class,
-            UsersSeeder::class,
+            RolesAndPermissionsSeeder::class, // Sets up roles & permissions
+            UsersSeeder::class,               // Creates default admin/user accounts
         ]);
-        // User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+
+        /**
+         * Example: Quickly create a test user with a factory.
+         * Uncomment if needed for development/demo.
+         *
+         * User::factory()->create([
+         *     'name' => 'Test User',
+         *     'email' => 'test@example.com',
+         * ]);
+         */
     }
 }

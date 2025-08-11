@@ -28,7 +28,7 @@
                 <p class="text-muted mb-0 small">Browse and filter system activity records</p>
             </div>
             @can('clear activity logs')
-                <form id="clear-logs-form" action="{{ route('activity-logs.clear') }}" method="POST" class="mb-0">
+                <form id="clear-logs-form" action="{{ route('activity-logs.clear') }}" method="POST" class="mb-0 clearLogs">
                     @csrf
                     <button type="submit" class="btn btn-danger btn-sm" id="clearLogsBtn">
                         <i class="bi bi-trash3-fill me-1"></i> Clear Logs
@@ -104,34 +104,4 @@
             @endif
         </div>
     </div>
-
-    <!-- SweetAlert2 Script -->
-    <x-slot name="script">
-        <script>
-            // SweetAlert2 confirmation for Clear Logs
-            document.addEventListener('DOMContentLoaded', function() {
-                const form = document.getElementById('clear-logs-form');
-                const btn = document.getElementById('clearLogsBtn');
-                if (form && btn) {
-                    form.addEventListener('submit', function(e) {
-                        e.preventDefault();
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Clear Activity Logs?',
-                            text: 'Are you sure you want to clear all activity logs? This action cannot be undone.',
-                            showCancelButton: true,
-                            confirmButtonText: 'Yes, clear logs',
-                            cancelButtonText: 'Cancel',
-                            confirmButtonColor: '#dc3545',
-                            cancelButtonColor: '#6c757d',
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                form.submit();
-                            }
-                        });
-                    });
-                }
-            });
-        </script>
-    </x-slot>
 </x-app-layout>

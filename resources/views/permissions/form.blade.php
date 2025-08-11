@@ -84,22 +84,4 @@
         </div>
     </div>
 
-    <!-- SweetAlert2 Toast on Save -->
-    @if (session('status') === 'permission-saved')
-        <x-slot name="script">
-            <script>
-                document.addEventListener('DOMContentLoaded', () => {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success',
-                        text: 'Permission has been {{ isset($permission) ? 'updated' : 'created' }} successfully.',
-                        toast: true,
-                        position: 'top-end',
-                        timer: 3000,
-                        showConfirmButton: false
-                    });
-                });
-            </script>
-        </x-slot>
-    @endif
 </x-app-layout>

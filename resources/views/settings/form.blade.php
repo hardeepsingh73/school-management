@@ -135,80 +135,95 @@
 
     <x-slot name="script">
         <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                if (typeof $ !== 'undefined') {
-                    $(document).ready(function() {
-                        // Group selection toggle
-                        $('#group-select').change(function() {
-                            if ($(this).val() === '__new__') {
-                                $('#group-input').removeClass('d-none').attr('required', true).attr(
-                                    'name', 'group');
-                                $('#group-select').addClass('d-none').removeAttr('required').removeAttr(
-                                    'name');
-                            }
-                        });
-                        $('#toggle-group').click(function() {
-                            if ($('#group-input').hasClass('d-none')) {
-                                $('#group-input').removeClass('d-none').attr('required', true).attr(
-                                    'name', 'group');
-                                $('#group-select').addClass('d-none').removeAttr('required').removeAttr(
-                                    'name');
-                            } else {
-                                $('#group-input').addClass('d-none').removeAttr('required').removeAttr(
-                                    'name');
-                                $('#group-select').removeClass('d-none').attr('required', true).attr(
-                                    'name', 'group');
-                            }
-                        });
+            $(function() {
+                // Group selection toggle
+                $('#group-select').change(function() {
+                    if ($(this).val() === '__new__') {
+                        $('#group-input').removeClass('d-none')
+                            .prop('required', true)
+                            .attr('name', 'group');
+                        $('#group-select').addClass('d-none')
+                            .prop('required', false)
+                            .removeAttr('name');
+                    }
+                });
 
-                        // Setup dynamic value field based on selected type
-                        function renderValueField() {
-                            const type = $('#type').val();
-                            // Get values from server-side or input
-                            const currentValue = `{{ old('value', $setting->value ?? '') }}`;
-                            let html =
-                                '<label for="value" class="form-label">Value <span class="text-danger">*</span></label>';
+                $('#toggle-group').click(function() {
+                    const $groupInput = $('#group-input');
+                    const $groupSelect = $('#group-select');
 
-                            if (type === 'boolean') {
-                                html += `<select name="value" id="value" class="form-control" required>
-                            <option value="1" ${currentValue == '1' ? 'selected' : ''}>Yes</option>
-                            <option value="0" ${currentValue == '0' ? 'selected' : ''}>No</option>
-                        </select>`;
-                            } else if (type === 'text') {
-                                html +=
-                                    `<textarea name="value" id="value" class="form-control" rows="3" required>${currentValue}</textarea>`;
-                            } else if (type === 'image') {
-                                html += `<div>
-                            <input type="file" name="value" id="value" class="form-control" ${'{{ isset($setting) }}' == '' ? 'required' : ''}>
-                            @if (isset($setting) && $setting->type === 'image' && $setting->value)
-                                <div class="mt-2">
-                                    <img src="{{ Storage::url($setting->value) }}" alt="Current image" style="max-height: 100px;">
-                                    <div class="form-check mt-2">
-                                        <input class="form-check-input" type="checkbox" name="remove_image" id="remove_image" value="1">
-                                        <label class="form-check-label" for="remove_image">Remove current image</label>
-                                    </div>
-                                </div>
-                            @endif
-                        </div>`;
-                            } else if (type === 'array' || type === 'json') {
-                                html += `<textarea name="value" id="value" class="form-control" rows="3" required>${currentValue}</textarea>
-                            <small class="text-muted">
-                                ${type === 'array' ? 'Comma-separated, e.g. value1,value2,value3' : 'Valid JSON string'}
-                            </small>`;
-                            } else {
-                                // string, integer, float
-                                const inputType = (type === 'integer' || type === 'float') ? 'number' : 'text';
-                                const step = (type === 'float') ? 'any' : '1';
-                                html += `<input type="${inputType}" name="value" id="value" class="form-control"
-                            value="${currentValue}" ${inputType === 'number' ? `step="${step}"` : ''} required>`;
-                            }
-                            $('#value-container').html(html);
-                        }
-                        $('#type').change(renderValueField);
-                        // On initial page load, render based on preset type
-                        renderValueField();
-                    });
+                    if ($groupInput.hasClass('d-none')) {
+                        $groupInput.removeClass('d-none')
+                            .prop('required', true)
+                            .attr('name', 'group');
+                        $groupSelect.addClass('d-none')
+                            .prop('required', false)
+                            .removeAttr('name');
+                    } else {
+                        $groupInput.addClass('d-none')
+                            .prop('required', false)
+                            .removeAttr('name');
+                        $groupSelect.removeClass('d-none')
+                            .prop('required', true)
+                            .attr('name', 'group');
+                    }
+                });
+
+                // Setup dynamic value field based on selected type
+                function renderValueField() {
+                    const type = $('#type').val();
+                    const currentValue = `{{ old('value', $setting->value ?? '') }}`;
+                    let html = '<label for="value" class="form-label">Value <span class="text-danger">*</span></label>';
+
+                    switch (type) {
+                        case 'boolean':
+                            html += `<select name="value" id="value" class="form-control" required>
+                    <option value="1" ${currentValue == '1' ? 'selected' : ''}>Yes</option>
+                    <option value="0" ${currentValue == '0' ? 'selected' : ''}>No</option>
+                </select>`;
+                            break;
+
+                        case 'text':
+                            html +=
+                                `<textarea name="value" id="value" class="form-control" rows="3" required>${currentValue}</textarea>`;
+                            break;
+
+                        case 'image':
+                            html += `<div>
+                    <input type="file" name="value" id="value" class="form-control" ${'{{ isset($setting) }}' == '' ? 'required' : ''}>
+                    @if (isset($setting) && $setting->type === 'image' && $setting->value)
+                        <div class="mt-2">
+                            <img src="{{ Storage::url($setting->value) }}" alt="Current image" style="max-height: 100px;">
+                            <div class="form-check mt-2">
+                                <input class="form-check-input" type="checkbox" name="remove_image" id="remove_image" value="1">
+                                <label class="form-check-label" for="remove_image">Remove current image</label>
+                            </div>
+                        </div>
+                    @endif
+                </div>`;
+                            break;
+
+                        case 'array':
+                        case 'json':
+                            html += `<textarea name="value" id="value" class="form-control" rows="3" required>${currentValue}</textarea>
+                    <small class="text-muted">
+                        ${type === 'array' ? 'Comma-separated, e.g. value1,value2,value3' : 'Valid JSON string'}
+                    </small>`;
+                            break;
+
+                        default: // string, integer, float
+                            const inputType = (type === 'integer' || type === 'float') ? 'number' : 'text';
+                            const step = (type === 'float') ? 'any' : '1';
+                            html += `<input type="${inputType}" name="value" id="value" class="form-control"
+                    value="${currentValue}" ${inputType === 'number' ? `step="${step}"` : ''} required>`;
+                    }
+
+                    $('#value-container').html(html);
                 }
+
+                // Initialize
+                $('#type').change(renderValueField);
+                renderValueField();
             });
         </script>
     </x-slot>

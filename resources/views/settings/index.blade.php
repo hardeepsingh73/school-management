@@ -113,9 +113,16 @@
                                             </x-edit-button>
                                         @endcan
                                         @can('delete settings')
-                                            <x-delete-button :onClickFunction="__('deleteSetting')" :eid="$setting->id">
-                                                <i class="bi bi-trash"></i>
-                                            </x-delete-button>
+                                            <form action="{{ route('settings.destroy', $setting->id) }}" method="POST"
+                                                class="d-inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="button"
+                                                    class="btn btn-sm btn-outline-danger delete-entry delete-setting"
+                                                    data-id="{{ $setting->id }}" data-bs-toggle="tooltip" title="Delete">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
                                         @endcan
                                     </div>
                                 </td>
@@ -149,56 +156,16 @@
 
     <x-slot name="script">
         <script>
-            function deleteSetting(id) {
-                Swal.fire({
-                    title: 'Delete this setting?',
-                    text: "This action cannot be undone.",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#dc3545',
-                    cancelButtonColor: '#6c757d',
-                    confirmButtonText: 'Yes, delete it'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            url: '{{ route('settings.destroy', '') }}/' + id,
-                            type: 'DELETE',
-                            headers: {
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                            },
-                            dataType: 'json',
-                            success: function(response) {
-                                if (response.status) {
-                                    Swal.fire(
-                                        'Deleted!',
-                                        'Setting has been deleted.',
-                                        'success'
-                                    ).then(() => window.location.reload());
-                                }
-                            },
-                            error: function(xhr) {
-                                Swal.fire(
-                                    'Error!',
-                                    xhr.responseJSON?.message || 'Something went wrong',
-                                    'error'
-                                );
-                            }
-                        });
-                    }
-                });
-            }
-            document.addEventListener('DOMContentLoaded', function() {
-                if (typeof $ !== 'undefined') {
-                    // Auto-show search if filters are applied
-                    $(document).ready(function() {
-                        @if (request()->hasAny(['key', 'group']))
-                            $('#listSearchForm').collapse('show');
-                        @endif
+            $(function() {
+                // Auto-show search if filters are applied
+                @if (request()->hasAny(['key', 'group']))
+                    $('#listSearchForm').collapse('show');
+                @endif
 
-                        // Init tooltips
-                        $('[data-bs-toggle="tooltip"]').tooltip();
-                    });
-                }
+                // Initialize tooltips
+                $('[data-bs-toggle="tooltip"]').each(function() {
+                    new bootstrap.Tooltip(this);
+                });
             });
         </script>
     </x-slot>

@@ -1,4 +1,14 @@
 <x-app-layout>
+
+    <!-- Page Header -->
+    <x-slot name="header">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2 class="fw-semibold fs-4 text-dark mb-0">
+                <i class="bi bi-people me-2"></i>
+                {{ isset($user) ? 'Edit User' : 'Create New User' }}
+            </h2>
+        </div>
+    </x-slot>
     <!-- Breadcrumbs -->
     <x-slot name="breadcrumbs">
         <li class="breadcrumb-item">
@@ -161,15 +171,16 @@
     <!-- Password toggle and tooltips -->
     <x-slot name="script">
         <script>
-            document.getElementById('togglePassword').addEventListener('click', function() {
-                const passwordInput = document.getElementById('password');
-                const icon = this.querySelector('i');
-                if (passwordInput.type === 'password') {
-                    passwordInput.type = 'text';
-                    icon.classList.replace('bi-eye', 'bi-eye-slash');
+            $('#togglePassword').click(function() {
+                const $passwordInput = $('#password');
+                const $icon = $(this).find('i');
+
+                if ($passwordInput.attr('type') === 'password') {
+                    $passwordInput.attr('type', 'text');
+                    $icon.removeClass('bi-eye').addClass('bi-eye-slash');
                 } else {
-                    passwordInput.type = 'password';
-                    icon.classList.replace('bi-eye-slash', 'bi-eye');
+                    $passwordInput.attr('type', 'password');
+                    $icon.removeClass('bi-eye-slash').addClass('bi-eye');
                 }
             });
         </script>
