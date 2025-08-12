@@ -9,42 +9,34 @@
 :root {
   --color-primary: #0d3b66;
   /* Sapphire Blue */
-  --color-primary-hover: #0b3560;
   --color-primary-active: #092c55;
 
   --color-secondary: #e67e22;
   /* Amber Orange */
-  --color-secondary-hover: #f08c28;
   --color-secondary-active: #c76d1a;
 
   --color-success: #16a34a;
   /* Emerald Green */
-  --color-success-hover: #22c55e;
   --color-success-active: #15803d;
 
   --color-danger: #c1121f;
   /* Crimson Red */
-  --color-danger-hover: #e31b25;
   --color-danger-active: #9f0f1a;
 
   --color-warning: #f5b700;
   /* Gold */
-  --color-warning-hover: #ffcd38;
   --color-warning-active: #d49900;
 
   --color-info: #0277bd;
   /* Sea Blue */
-  --color-info-hover: #039be5;
   --color-info-active: #01579b;
 
   --color-light: #f9fafb;
   /* Off White */
-  --color-light-hover: #f3f4f6;
   --color-light-active: #e5e7eb;
 
   --color-dark: #1f2937;
   /* Deep Navy */
-  --color-dark-hover: #374151;
   --color-dark-active: #111827;
 
   --color-text-light: #ffffff;
@@ -72,12 +64,7 @@
 }
 
 .btn-primary:hover,
-.btn-primary:focus {
-  background: var(--color-primary-hover) !important;
-  border-color: var(--color-primary-hover) !important;
-  color: var(--color-text-light) !important;
-}
-
+.btn-primary:focus,
 .btn-primary:active,
 .btn-primary.active,
 .show>.btn-primary.dropdown-toggle {
@@ -93,11 +80,7 @@
 }
 
 .btn-secondary:hover,
-.btn-secondary:focus {
-  background: var(--color-secondary-hover) !important;
-  border-color: var(--color-secondary-hover) !important;
-}
-
+.btn-secondary:focus,
 .btn-secondary:active,
 .btn-secondary.active,
 .show>.btn-secondary.dropdown-toggle {
@@ -112,11 +95,7 @@
 }
 
 .btn-success:hover,
-.btn-success:focus {
-  background: var(--color-success-hover) !important;
-  border-color: var(--color-success-hover) !important;
-}
-
+.btn-success:focus,
 .btn-success:active,
 .btn-success.active,
 .show>.btn-success.dropdown-toggle {
@@ -131,11 +110,7 @@
 }
 
 .btn-danger:hover,
-.btn-danger:focus {
-  background: var(--color-danger-hover) !important;
-  border-color: var(--color-danger-hover) !important;
-}
-
+.btn-danger:focus,
 .btn-danger:active,
 .btn-danger.active,
 .show>.btn-danger.dropdown-toggle {
@@ -150,11 +125,7 @@
 }
 
 .btn-warning:hover,
-.btn-warning:focus {
-  background: var(--color-warning-hover) !important;
-  border-color: var(--color-warning-hover) !important;
-}
-
+.btn-warning:focus,
 .btn-warning:active,
 .btn-warning.active,
 .show>.btn-warning.dropdown-toggle {
@@ -169,11 +140,7 @@
 }
 
 .btn-info:hover,
-.btn-info:focus {
-  background: var(--color-info-hover) !important;
-  border-color: var(--color-info-hover) !important;
-}
-
+.btn-info:focus,
 .btn-info:active,
 .btn-info.active,
 .show>.btn-info.dropdown-toggle {
@@ -188,11 +155,7 @@
 }
 
 .btn-light:hover,
-.btn-light:focus {
-  background: var(--color-light-hover) !important;
-  border-color: var(--color-border) !important;
-}
-
+.btn-light:focus,
 .btn-light:active,
 .btn-light.active,
 .show>.btn-light.dropdown-toggle {
@@ -207,11 +170,7 @@
 }
 
 .btn-dark:hover,
-.btn-dark:focus {
-  background: var(--color-dark-hover) !important;
-  border-color: var(--color-dark-hover) !important;
-}
-
+.btn-dark:focus,
 .btn-dark:active,
 .btn-dark.active,
 .show>.btn-dark.dropdown-toggle {
@@ -387,42 +346,34 @@
 /* Badges */
 .badge-primary {
   background: var(--color-primary) !important;
-  color: var(--color-light) !important;
 }
 
 .badge-secondary {
   background: var(--color-secondary) !important;
-  color: var(--color-light) !important;
 }
 
 .badge-success {
   background: var(--color-success) !important;
-  color: var(--color-light) !important;
 }
 
 .badge-danger {
   background: var(--color-danger) !important;
-  color: var(--color-light) !important;
 }
 
 .badge-warning {
   background: var(--color-warning) !important;
-  color: var(--color-dark) !important;
 }
 
 .badge-info {
   background: var(--color-info) !important;
-  color: var(--color-light) !important;
 }
 
 .badge-light {
   background: var(--color-light) !important;
-  color: var(--color-dark) !important;
 }
 
 .badge-dark {
   background: var(--color-dark) !important;
-  color: var(--color-light) !important;
 }
 
 /* Cards */
@@ -533,27 +484,27 @@
 
 /* Tables (Row highlights for striped tables) */
 .table-primary {
-  background: #e0e7ff !important;
+  background: var(--color-primary) !important;
 }
 
 .table-secondary {
-  background: #ffe4c2 !important;
+  background: var(--color-secondary) !important;
 }
 
 .table-success {
-  background: #d1fae5 !important;
+  background: var(--color-success) !important;
 }
 
 .table-danger {
-  background: #fee2e2 !important;
+  background: var(--color-danger) !important;
 }
 
 .table-warning {
-  background: #fef9c3 !important;
+  background: var(--color-warning) !important;
 }
 
 .table-info {
-  background: #cffafe !important;
+  background: var(--color-info) !important;
 }
 
 .table-light {
@@ -579,7 +530,7 @@
 
 .dropdown-menu {
   background: var(--color-primary) !important;
-  border: 1px solid var(--color-primary-hover) !important;
+  border: 1px solid var(--color-primary-active) !important;
 }
 
 .dropdown-item {
@@ -597,74 +548,74 @@
 --------------------------------------------------- */
 .bg-primary:hover,
 .bg-primary:focus {
-  background: var(--color-primary-hover) !important;
+  background: var(--color-primary-active) !important;
 }
 
 .bg-secondary:hover,
 .bg-secondary:focus {
-  background: var(--color-secondary-hover) !important;
+  background: var(--color-secondary-active) !important;
 }
 
 .bg-success:hover,
 .bg-success:focus {
-  background: var(--color-success-hover) !important;
+  background: var(--color-success-active) !important;
 }
 
 .bg-danger:hover,
 .bg-danger:focus {
-  background: var(--color-danger-hover) !important;
+  background: var(--color-danger-active) !important;
 }
 
 .bg-warning:hover,
 .bg-warning:focus {
-  background: var(--color-warning-hover) !important;
+  background: var(--color-warning-active) !important;
 }
 
 .bg-info:hover,
 .bg-info:focus {
-  background: var(--color-info-hover) !important;
+  background: var(--color-info-active) !important;
 }
 
 .bg-light:hover,
 .bg-light:focus {
-  background: var(--color-light-hover) !important;
+  background: var(--color-light-active) !important;
 }
 
 .bg-dark:hover,
 .bg-dark:focus {
-  background: var(--color-dark-hover) !important;
+  background: var(--color-dark-active) !important;
 }
 
 .text-primary:hover {
-  color: var(--color-primary-hover) !important;
+  color: var(--color-primary-active) !important;
 }
 
 .text-secondary:hover {
-  color: var(--color-secondary-hover) !important;
+  color: var(--color-secondary-active) !important;
 }
 
 .text-success:hover {
-  color: var(--color-success-hover) !important;
+  color: var(--color-success-active) !important;
 }
 
 .text-danger:hover {
-  color: var(--color-danger-hover) !important;
+  color: var(--color-danger-active) !important;
 }
 
 .text-warning:hover {
-  color: var(--color-warning-hover) !important;
+  color: var(--color-warning-active) !important;
 }
 
 .text-info:hover {
-  color: var(--color-info-hover) !important;
+  color: var(--color-info-active) !important;
 }
 
 .text-light:hover {
-  color: var(--color-light-hover) !important;
+  color: var(--color-light-active) !important;
 }
 
 .text-dark:hover {
-  color: var(--color-dark-hover) !important;
+  color: var(--color-dark-active) !important;
 }
 
 /* Base form control colors */
@@ -704,7 +655,7 @@
 
 .btn-link:hover,
 .btn-link:focus {
-  color: var(--color-primary-hover) !important;
+  color: var(--color-primary-active) !important;
 }
 
 .btn-link:active,
