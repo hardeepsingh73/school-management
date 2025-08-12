@@ -71,7 +71,7 @@ class Handler extends ExceptionHandler
              * log the failure into Laravel's default log system
              * so the error is not silently ignored.
              */
-            Log::error('❌ Failed to log error to database: ' . $loggingException->getMessage());
+            Log::error(' Failed to log error to database: ' . $loggingException->getMessage());
         }
 
         // Always call the parent report method to allow Laravel’s normal logging process.

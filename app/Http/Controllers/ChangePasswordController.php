@@ -35,7 +35,7 @@ class ChangePasswordController extends Controller
      */
     public function changePassword(Request $request)
     {
-        // ✅ Step 1: Validate user input
+        //  Step 1: Validate user input
         $request->validate([
             'current_password' => 'required|string',
             'new_password'     => 'required|string|min:8|confirmed',
@@ -44,19 +44,19 @@ class ChangePasswordController extends Controller
         // Get the currently authenticated user
         $user = Auth::user();
 
-        // 🔒 Step 2: Check if current password is correct
+        //  Step 2: Check if current password is correct
         if (!Hash::check($request->current_password, $user->password)) {
             throw ValidationException::withMessages([
                 'current_password' => ['The provided password does not match our records.'],
             ]);
         }
 
-        // 🔐 Step 3: Update password with hashing
+        //  Step 3: Update password with hashing
         $user->update([
             'password' => Hash::make($request->new_password),
         ]);
 
-        // ✅ Step 4: Redirect to dashboard with success message
+        //  Step 4: Redirect to dashboard with success message
         return redirect()
             ->route('dashboard')
             ->with('status', 'Password updated successfully!');

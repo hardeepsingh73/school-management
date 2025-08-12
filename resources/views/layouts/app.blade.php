@@ -75,7 +75,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
 
-            // ✅ Success Alert
+            //  Success Alert
             @if (session()->has('success'))
                 Swal.fire({
                     icon: 'success',
@@ -86,7 +86,7 @@
                 });
             @endif
 
-            // ❌ Error Alert (single messages from session)
+            //  Error Alert (single messages from session)
             @if (session()->has('error'))
                 Swal.fire({
                     icon: 'error',
@@ -106,7 +106,7 @@
                 });
             @endif
 
-            // ❌ Validation Errors (from $errors)
+            //  Validation Errors (from $errors)
             @if ($errors->any())
                 Swal.fire({
                     icon: 'error',

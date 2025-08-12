@@ -27,33 +27,33 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         try {
-            // 1️⃣ Validate input
+            //  Validate input
             $request->validate([
                 'email' => 'required|email',
                 'password' => 'required',
             ]);
 
-            // 2️⃣ Attempt to find the user by email
+            //  Attempt to find the user by email
             $user = User::where('email', $request->email)->first();
 
-            // 3️⃣ Verify credentials (user exists & password matches hash)
+            //  Verify credentials (user exists & password matches hash)
             if (!$user || !Hash::check($request->password, $user->password)) {
                 throw ValidationException::withMessages([
                     'email' => ['The provided credentials are incorrect.'],
                 ]);
             }
 
-            // 4️⃣ Create a new API token for the user (via Laravel Sanctum)
+            //  Create a new API token for the user (via Laravel Sanctum)
             $token = $user->createToken('auth_token')->plainTextToken;
 
-            // 5️⃣ Return success response with token & user data
+            // Return success response with token & user data
             return response()->json([
                 'access_token' => $token,
                 'token_type'   => 'Bearer',
                 'user'         => $user
             ]);
         } catch (\Exception $e) {
-            // ❌ Any unexpected error will be caught here
+            //  Any unexpected error will be caught here
             return response()->json([
                 'message' => $e->getMessage()
             ], 500);
@@ -74,15 +74,15 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         try {
-            // 1️⃣ Delete the current user's active token
+            //  Delete the current user's active token
             $request->user()->currentAccessToken()->delete();
 
-            // 2️⃣ Return a success message
+            //  Return a success message
             return response()->json([
                 'message' => 'Successfully logged out'
             ]);
         } catch (\Exception $e) {
-            // ❌ Catch and return failure response
+            //  Catch and return failure response
             return response()->json([
                 'message' => 'Logout failed',
                 'error'   => $e->getMessage()

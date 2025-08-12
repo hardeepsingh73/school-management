@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\ApiLogController;
 use App\Http\Controllers\EmailLogController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ErrorLogController;
@@ -85,6 +86,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/{activityLog}', [ActivityLogController::class, 'show'])->name('show');
         Route::post('/clear', [ActivityLogController::class, 'clear'])->name('clear');
         Route::patch('/{id}/restore', [ActivityLogController::class, 'restore'])->name('restore');
+    });
+    Route::prefix('api-logs')->name('api-logs.')->group(function () {
+        Route::match(['get', 'post'], '/', [ApiLogController::class, 'index'])->name('index');
+        Route::get('/{apiLog}', [ApiLogController::class, 'show'])->name('show');
+        Route::post('/clear', [ApiLogController::class, 'clear'])->name('clear');
     });
 });
 Route::middleware(['auth', 'is_superadmin'])->group(function () {

@@ -26,7 +26,7 @@ class RolesAndPermissionsSeeder extends Seeder
 
         DB::transaction(function () {
             // ----------------------
-            // 1️⃣ Create Permissions
+            //  Create Permissions
             // ----------------------
             $permissions = [
                 // User management
@@ -72,7 +72,7 @@ class RolesAndPermissionsSeeder extends Seeder
             }
 
             // ----------------------
-            // 2️⃣ Create Roles
+            //  Create Roles
             // ----------------------
 
             // Super Admin - all permissions
@@ -97,6 +97,6 @@ class RolesAndPermissionsSeeder extends Seeder
             $user->syncPermissions(['view dashboard']);
         });
 
-        $this->command->info('✅ Roles and permissions seeded successfully.');
+        $this->command->info(' Roles and permissions seeded successfully.');
     }
 }

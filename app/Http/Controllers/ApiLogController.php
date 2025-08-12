@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ErrorLog;
+use App\Models\ApiLog;
+use App\Models\User;
 use App\Services\SearchService;
-use Illuminate\Http\Request;
-use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
-use Illuminate\View\View;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\Middleware;
 
-class ErrorLogController extends Controller implements HasMiddleware
+class ApiLogController extends Controller
 {
     /**
      * Service that handles reusable search/filter functionality.
@@ -41,18 +41,17 @@ class ErrorLogController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            // Only users with permission "view error logs" can view the index page
-            new Middleware('permission:view error logs', only: ['index']),
-            // Only users with permission "clear error logs" can clear logs
-            new Middleware('permission:clear error logs', only: ['clear']),
+            // Only users with permission "view api logs" can view the index page
+            new Middleware('permission:view api logs', only: ['index']),
+            // Only users with permission "clear api logs" can clear logs
+            new Middleware('permission:clear api logs', only: ['clear']),
         ];
     }
-
     /**
-     * Display a paginated list of error logs with search capability.
+     * Display a paginated list of api logs with search capability.
      *
      * Search is done via SearchService, matching columns like:
-     *  - error_type
+     *  - api_type
      *  - message
      *
      * @param  \Illuminate\Http\Request  $request
@@ -62,19 +61,31 @@ class ErrorLogController extends Controller implements HasMiddleware
     {
         // Use SearchService for keyword-based search
         $query = $this->searchService->search(
-            ErrorLog::query(),
-            ['error_type', 'message'],
+            ApiLog::with('user'),
+            ['method' => '=', 'ip_address', 'endpoint' => '=', 'user_id' => '='],
             $request
         );
 
         // Paginate logs - latest first, 10 per page
-        $errorLogs = $query->latest()->paginate(10);
-
-        return view('errorlogs.index', compact('errorLogs'));
+        $apiLogs = $query->latest()->paginate(10);
+        $users = User::orderBy('name')->get();
+        return view('apilogs.index', compact('apiLogs', 'users'));
+    }
+    /**
+     * Show details of a specific api log.
+     *
+     * Route Model Binding automatically fetches the apiLog instance.
+     *
+     * @param  \App\Models\apiLog  $apiLog
+     * @return \Illuminate\View\View
+     */
+    public function show(ApiLog $apiLog)
+    {
+        return view('apilogs.view', compact('apiLog'));
     }
 
     /**
-     * Clear (delete) all error log entries from storage.
+     * Clear (delete) all api log entries from storage.
      *
      * ⚠ This action is irreversible; use middleware to restrict access.
      *
@@ -82,10 +93,10 @@ class ErrorLogController extends Controller implements HasMiddleware
      */
     public function clear(): RedirectResponse
     {
-        ErrorLog::truncate();
+        ApiLog::truncate();
 
         return redirect()
-            ->route('error-logs.index')
-            ->with('success', 'All error logs have been cleared.');
+            ->route('api-logs.index')
+            ->with('success', 'All api logs have been cleared.');
     }
 }

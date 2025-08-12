@@ -7,9 +7,28 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Routing\Controllers\Middleware;
 
 class ActivityLogController extends Controller
 {
+    /**
+     * Define route middleware permissions for this controller's actions.
+     *
+     * Using Laravel 10+ `HasMiddleware` + `Middleware` class approach.
+     * Ensures that only users with the correct permissions can take
+     * specific actions.
+     *
+     * @return array<int, \Illuminate\Routing\Controllers\Middleware>
+     */
+    public static function middleware(): array
+    {
+        return [
+            // Only users with permission "view activity logs" can view the index page
+            new Middleware('permission:view activity logs', only: ['index']),
+            // Only users with permission "clear activity logs" can clear logs
+            new Middleware('permission:clear activity logs', only: ['clear']),
+        ];
+    }
     /**
      * Display a paginated list of activity logs with optional filters.
      *
@@ -141,6 +160,7 @@ class ActivityLogController extends Controller
             ->route('activity-logs.index')
             ->with('success', 'All activity logs have been cleared.');
     }
+    
     public function restore($id)
     {
         $activityLog = ActivityLog::findOrFail($id);

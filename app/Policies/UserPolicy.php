@@ -32,7 +32,7 @@ class UserPolicy
      */
     public function manage(User $authUser, User $targetUser): bool
     {
-        // ✅ Allow self-management
+        //  Allow self-management
         if ($authUser->id === $targetUser->id) {
             return true;
         }
@@ -41,17 +41,17 @@ class UserPolicy
         $roleSuperadmin = Settings::get('role_super_admin', 'superadmin');
         $roleAdmin = Settings::get('role_admin', 'admin');
 
-        // ✅ Superadmin can manage any user
+        //  Superadmin can manage any user
         if ($authUser->hasRole($roleSuperadmin)) {
             return true;
         }
 
-        // ✅ Admin can only manage non-admin, non-superadmin users
+        //  Admin can only manage non-admin, non-superadmin users
         if ($authUser->hasRole($roleAdmin)) {
             return !$targetUser->hasRole($roleSuperadmin) && !$targetUser->hasRole($roleAdmin);
         }
 
-        // ❌ Default: deny management
+        //  Default: deny management
         return false;
     }
 }

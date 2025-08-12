@@ -55,7 +55,7 @@ class UsersSeeder extends Seeder
 
         $user->syncRoles('user');
 
-        $this->command->info('✅ Default superadmin,admin and user accounts seeded successfully.');
+        $this->command->info(' Default superadmin,admin and user accounts seeded successfully.');
     }
 
     /**

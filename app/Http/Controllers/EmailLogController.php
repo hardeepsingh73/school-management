@@ -58,7 +58,7 @@ class EmailLogController extends Controller
         $emailLogs = $query->latest()->paginate(10);
 
         // Return the view with paginated email logs
-        return view('email_logs.index', compact('emailLogs'));
+        return view('emaillogs.index', compact('emailLogs'));
     }
 
     /**
@@ -68,7 +68,7 @@ class EmailLogController extends Controller
      */
     public function clear(): RedirectResponse
     {
-        // Truncate the email_logs table
+        // Truncate the emaillogs table
         EmailLog::truncate();
 
         // Redirect back to index with success message
@@ -89,7 +89,7 @@ class EmailLogController extends Controller
         $log = EmailLog::findOrFail($id);
 
         // Return the view with the email log details
-        return view('email_logs.view', [
+        return view('emaillogs.view', [
             'emailLog' => $log
         ]);
     }

@@ -38,12 +38,12 @@ class RoleDataHelper
          * ---- Access Control Rules ----
          */
 
-        // 1️⃣ Super Admin → Can see all users
+        //  Super Admin → Can see all users
         if ($user->hasRole($superAdminRole)) {
             return $returnQuery ? $query : $query->latest()->get();
         }
 
-        // 2️⃣ Admin → Exclude Super Admins & other Admins
+        //  Admin → Exclude Super Admins & other Admins
         if ($user->hasRole($adminRole)) {
             $query->whereDoesntHave('roles', function ($q) use ($superAdminRole, $adminRole) {
                 $q->whereIn('name', [$superAdminRole, $adminRole]);
@@ -51,7 +51,7 @@ class RoleDataHelper
             return $returnQuery ? $query : $query->latest()->get();
         }
 
-        // 3️⃣ Regular User → Only themselves
+        //  Regular User → Only themselves
         if ($user->hasRole($userRole)) {
             $query->where('id', $user->id);
         }

@@ -46,7 +46,7 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        // ✅ Validate input
+        //  Validate input
         $validated = $request->validate([
             'name'     => 'required|string|max:255',
             'email'    => 'required|string|email|max:255|unique:users',
@@ -56,7 +56,7 @@ class UserController extends Controller
 
         DB::beginTransaction();
         try {
-            // 📝 Create user with hashed password
+            //  Create user with hashed password
             $user = User::create([
                 'name'     => $validated['name'],
                 'email'    => $validated['email'],
@@ -105,7 +105,7 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        // ✅ Validate request
+        //  Validate request
         $validated = $request->validate([
             'name'     => 'required|string|max:255',
             'email'    => ['required', 'email', Rule::unique('users')->ignore($user->id)],
