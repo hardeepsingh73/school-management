@@ -1,4 +1,14 @@
 <x-app-layout>
+    <!-- Page Header -->
+    <x-slot name="header">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2 class="fw-semibold fs-4 text-dark mb-0">
+                <i class="bi bi-person-badge-fill me-2"></i>
+                Settings
+            </h2>
+        </div>
+    </x-slot>
+
     <!-- Breadcrumbs -->
     <x-slot name="breadcrumbs">
         <li class="breadcrumb-item">
@@ -156,15 +166,17 @@
 
     <x-slot name="script">
         <script>
-            $(function() {
-                // Auto-show search if filters are applied
-                @if (request()->hasAny(['key', 'group']))
-                    $('#listSearchForm').collapse('show');
-                @endif
+            document.addEventListener('DOMContentLoaded', function() {
+                $(function() {
+                    // Auto-show search if filters are applied
+                    @if (request()->hasAny(['key', 'group']))
+                        $('#listSearchForm').collapse('show');
+                    @endif
 
-                // Initialize tooltips
-                $('[data-bs-toggle="tooltip"]').each(function() {
-                    new bootstrap.Tooltip(this);
+                    // Initialize tooltips
+                    $('[data-bs-toggle="tooltip"]').each(function() {
+                        new bootstrap.Tooltip(this);
+                    });
                 });
             });
         </script>

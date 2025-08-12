@@ -112,18 +112,18 @@
                                 <td class="text-truncate" style="max-width:200px;">{{ $user->email }}</td>
                                 <td>
                                     @foreach ($user->roles as $role)
-                                        <span class="badge bg-primary bg-opacity-10 ">
+                                        <span class="badge bg-primary ">
                                             {{ $role->name }}
                                         </span>
                                     @endforeach
                                 </td>
                                 <td>
                                     @if ($user->email_verified_at)
-                                        <span class="badge rounded-pill bg-success bg-opacity-10">
+                                        <span class="badge rounded-pill bg-success">
                                             <i class="bi bi-patch-check-fill me-1"></i> Verified
                                         </span>
                                     @else
-                                        <span class="badge rounded-pill bg-warning bg-opacity-10">
+                                        <span class="badge rounded-pill bg-warning">
                                             <i class="bi bi-exclamation-circle-fill me-1"></i> Unverified
                                         </span>
                                     @endif
@@ -195,16 +195,18 @@
 
     @push('scripts')
         <script>
-            $(document).ready(function() {
-                // Initialize tooltips
-                $('[data-bs-toggle="tooltip"]').each(function() {
-                    new bootstrap.Tooltip(this);
-                });
+            document.addEventListener('DOMContentLoaded', function() {
+                $(document).ready(function() {
+                    // Initialize tooltips
+                    $('[data-bs-toggle="tooltip"]').each(function() {
+                        new bootstrap.Tooltip(this);
+                    });
 
-                // Show Filters if search params exist
-                @if (request()->hasAny(['name', 'email', 'role']))
-                    new bootstrap.Collapse($('#userFilters')[0]).show();
-                @endif
+                    // Show Filters if search params exist
+                    @if (request()->hasAny(['name', 'email', 'role']))
+                        new bootstrap.Collapse($('#userFilters')[0]).show();
+                    @endif
+                });
             });
         </script>
     @endpush

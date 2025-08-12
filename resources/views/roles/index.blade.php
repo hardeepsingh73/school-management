@@ -59,7 +59,7 @@
                                 <td>
                                     <div class="d-flex flex-wrap gap-2">
                                         @foreach ($role->permissions->take(3) as $permission)
-                                            <span class="badge bg-primary bg-opacity-10 py-1 px-2 small">
+                                            <span class="badge bg-primary py-1 px-2 small">
                                                 {{ $permission->name }}
                                             </span>
                                         @endforeach
@@ -125,10 +125,12 @@
 
     @push('scripts')
         <script>
-            $(document).ready(function() {
-                // Initialize tooltips
-                $('[data-bs-toggle="tooltip"]').each(function() {
-                    new bootstrap.Tooltip(this);
+            document.addEventListener('DOMContentLoaded', function() {
+                $(document).ready(function() {
+                    // Initialize tooltips
+                    $('[data-bs-toggle="tooltip"]').each(function() {
+                        new bootstrap.Tooltip(this);
+                    });
                 });
             });
         </script>

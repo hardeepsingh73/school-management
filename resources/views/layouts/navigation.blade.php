@@ -7,12 +7,13 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
             @endauth
-
-            <!-- Brand/logo -->
-            <a class="navbar-brand d-flex align-items-center" href="{{ url('/') }}" aria-label="Home">
-                <i class="bi bi-rocket-takeoff me-2"></i>
-                <span class="fw-bold">{{ setting('site_name', 'Laravel') }}</span>
-            </a>
+            <div class="hs_brand">
+                <!-- Brand/logo -->
+                <a class="navbar-brand d-flex align-items-center" href="{{ url('/') }}" aria-label="Home">
+                    <i class="bi bi-rocket-takeoff me-2"></i>
+                    <span class="fw-bold">{{ setting('site_name', 'Laravel') }}</span>
+                </a>
+            </div>
             <!-- Main navbar toggler -->
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbarContent"
                 aria-controls="mainNavbarContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -137,8 +138,6 @@
                 text: "You'll need to log in again to access your account.",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
                 confirmButtonText: 'Yes, log out',
                 cancelButtonText: 'Cancel'
             }).then((result) => {

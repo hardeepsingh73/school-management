@@ -1,4 +1,13 @@
 <x-app-layout>
+    <!-- Page Header -->
+    <x-slot name="header">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2 class="fw-semibold fs-4 text-dark mb-0">
+                <i class="bi bi-gear-wide-connected me-2"></i>
+                Settings
+            </h2>
+        </div>
+    </x-slot>
     <!-- Breadcrumbs -->
     <x-slot name="breadcrumbs">
         <li class="breadcrumb-item">
@@ -114,39 +123,41 @@
 
     <x-slot name="script">
         <script>
-            $(function() {
-                // Initialize Bootstrap tabs (jQuery version)
-                $('button[data-bs-toggle="tab"]').click(function() {
-                    const tabTrigger = new bootstrap.Tab(this);
-                    tabTrigger.show();
-                });
+            document.addEventListener('DOMContentLoaded', function() {
+                $(function() {
+                    // Initialize Bootstrap tabs (jQuery version)
+                    $('button[data-bs-toggle="tab"]').click(function() {
+                        const tabTrigger = new bootstrap.Tab(this);
+                        tabTrigger.show();
+                    });
 
-                // Toggle boolean labels on change
-                $('.form-check-input[type="checkbox"]').change(function() {
-                    if ($(this).attr('name')?.startsWith('settings[')) {
-                        $(this).next('label').text($(this).is(':checked') ? 'Enabled' : 'Disabled');
-                    }
-                });
+                    // Toggle boolean labels on change
+                    $('.form-check-input[type="checkbox"]').change(function() {
+                        if ($(this).attr('name')?.startsWith('settings[')) {
+                            $(this).next('label').text($(this).is(':checked') ? 'Enabled' : 'Disabled');
+                        }
+                    });
 
-                // Preview image before upload
-                $('input[type="file"][accept="image/*"]').change(function() {
-                    const file = this.files[0];
-                    if (!file) return;
+                    // Preview image before upload
+                    $('input[type="file"][accept="image/*"]').change(function() {
+                        const file = this.files[0];
+                        if (!file) return;
 
-                    const reader = new FileReader();
-                    const container = $(this).closest('.image-upload-container');
+                        const reader = new FileReader();
+                        const container = $(this).closest('.image-upload-container');
 
-                    reader.onload = function(e) {
-                        container.find('.image-preview').remove();
-                        container.append(`
+                        reader.onload = function(e) {
+                            container.find('.image-preview').remove();
+                            container.append(`
                 <div class="image-preview mt-2">
                     <p class="small text-muted mb-1">New Image Preview:</p>
                     <img src="${e.target.result}" alt="Preview" class="img-thumbnail mb-2" style="max-height: 100px;">
                 </div>
             `);
-                    };
+                        };
 
-                    reader.readAsDataURL(file);
+                        reader.readAsDataURL(file);
+                    });
                 });
             });
         </script>

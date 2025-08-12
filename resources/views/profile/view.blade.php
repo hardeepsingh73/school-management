@@ -201,27 +201,27 @@
     <!-- SweetAlert2 Script for Resend Verification -->
     <x-slot name="script">
         <script>
-            $(function() {
-                const $resendForm = $('#resendVerificationForm');
-                if ($resendForm.length) {
-                    $resendForm.on('submit', function(e) {
-                        e.preventDefault();
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Resend Verification Email?',
-                            text: 'We will send a new verification email to your registered address.',
-                            showCancelButton: true,
-                            confirmButtonText: 'Yes, send it',
-                            cancelButtonText: 'Cancel',
-                            confirmButtonColor: '#0d6efd',
-                            cancelButtonColor: '#6c757d'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                $resendForm.off('submit').trigger('submit');
-                            }
+            document.addEventListener('DOMContentLoaded', function() {
+                $(function() {
+                    const $resendForm = $('#resendVerificationForm');
+                    if ($resendForm.length) {
+                        $resendForm.on('submit', function(e) {
+                            e.preventDefault();
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Resend Verification Email?',
+                                text: 'We will send a new verification email to your registered address.',
+                                showCancelButton: true,
+                                confirmButtonText: 'Yes, send it',
+                                cancelButtonText: 'Cancel',
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    $resendForm.off('submit').trigger('submit');
+                                }
+                            });
                         });
-                    });
-                }
+                    }
+                });
             });
         </script>
     </x-slot>

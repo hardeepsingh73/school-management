@@ -1,4 +1,12 @@
 <x-app-layout>
+    <x-slot name="header">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2 class="fw-semibold fs-4 text-dark mb-0">
+                <i class="bi bi-gear-wide-connected me-2"></i>
+                {{ isset($setting) ? 'Edit' : 'Create' }} Settings
+            </h2>
+        </div>
+    </x-slot>
     <!-- Breadcrumbs -->
     <x-slot name="breadcrumbs">
         <li class="breadcrumb-item">
@@ -135,61 +143,63 @@
 
     <x-slot name="script">
         <script>
-            $(function() {
-                // Group selection toggle
-                $('#group-select').change(function() {
-                    if ($(this).val() === '__new__') {
-                        $('#group-input').removeClass('d-none')
-                            .prop('required', true)
-                            .attr('name', 'group');
-                        $('#group-select').addClass('d-none')
-                            .prop('required', false)
-                            .removeAttr('name');
-                    }
-                });
+            document.addEventListener('DOMContentLoaded', function() {
+                $(function() {
+                    // Group selection toggle
+                    $('#group-select').change(function() {
+                        if ($(this).val() === '__new__') {
+                            $('#group-input').removeClass('d-none')
+                                .prop('required', true)
+                                .attr('name', 'group');
+                            $('#group-select').addClass('d-none')
+                                .prop('required', false)
+                                .removeAttr('name');
+                        }
+                    });
 
-                $('#toggle-group').click(function() {
-                    const $groupInput = $('#group-input');
-                    const $groupSelect = $('#group-select');
+                    $('#toggle-group').click(function() {
+                        const $groupInput = $('#group-input');
+                        const $groupSelect = $('#group-select');
 
-                    if ($groupInput.hasClass('d-none')) {
-                        $groupInput.removeClass('d-none')
-                            .prop('required', true)
-                            .attr('name', 'group');
-                        $groupSelect.addClass('d-none')
-                            .prop('required', false)
-                            .removeAttr('name');
-                    } else {
-                        $groupInput.addClass('d-none')
-                            .prop('required', false)
-                            .removeAttr('name');
-                        $groupSelect.removeClass('d-none')
-                            .prop('required', true)
-                            .attr('name', 'group');
-                    }
-                });
+                        if ($groupInput.hasClass('d-none')) {
+                            $groupInput.removeClass('d-none')
+                                .prop('required', true)
+                                .attr('name', 'group');
+                            $groupSelect.addClass('d-none')
+                                .prop('required', false)
+                                .removeAttr('name');
+                        } else {
+                            $groupInput.addClass('d-none')
+                                .prop('required', false)
+                                .removeAttr('name');
+                            $groupSelect.removeClass('d-none')
+                                .prop('required', true)
+                                .attr('name', 'group');
+                        }
+                    });
 
-                // Setup dynamic value field based on selected type
-                function renderValueField() {
-                    const type = $('#type').val();
-                    const currentValue = `{{ old('value', $setting->value ?? '') }}`;
-                    let html = '<label for="value" class="form-label">Value <span class="text-danger">*</span></label>';
+                    // Setup dynamic value field based on selected type
+                    function renderValueField() {
+                        const type = $('#type').val();
+                        const currentValue = `{{ old('value', $setting->value ?? '') }}`;
+                        let html =
+                            '<label for="value" class="form-label">Value <span class="text-danger">*</span></label>';
 
-                    switch (type) {
-                        case 'boolean':
-                            html += `<select name="value" id="value" class="form-control" required>
+                        switch (type) {
+                            case 'boolean':
+                                html += `<select name="value" id="value" class="form-control" required>
                     <option value="1" ${currentValue == '1' ? 'selected' : ''}>Yes</option>
                     <option value="0" ${currentValue == '0' ? 'selected' : ''}>No</option>
                 </select>`;
-                            break;
+                                break;
 
-                        case 'text':
-                            html +=
-                                `<textarea name="value" id="value" class="form-control" rows="3" required>${currentValue}</textarea>`;
-                            break;
+                            case 'text':
+                                html +=
+                                    `<textarea name="value" id="value" class="form-control" rows="3" required>${currentValue}</textarea>`;
+                                break;
 
-                        case 'image':
-                            html += `<div>
+                            case 'image':
+                                html += `<div>
                     <input type="file" name="value" id="value" class="form-control" ${'{{ isset($setting) }}' == '' ? 'required' : ''}>
                     @if (isset($setting) && $setting->type === 'image' && $setting->value)
                         <div class="mt-2">
@@ -201,29 +211,30 @@
                         </div>
                     @endif
                 </div>`;
-                            break;
+                                break;
 
-                        case 'array':
-                        case 'json':
-                            html += `<textarea name="value" id="value" class="form-control" rows="3" required>${currentValue}</textarea>
+                            case 'array':
+                            case 'json':
+                                html += `<textarea name="value" id="value" class="form-control" rows="3" required>${currentValue}</textarea>
                     <small class="text-muted">
                         ${type === 'array' ? 'Comma-separated, e.g. value1,value2,value3' : 'Valid JSON string'}
                     </small>`;
-                            break;
+                                break;
 
-                        default: // string, integer, float
-                            const inputType = (type === 'integer' || type === 'float') ? 'number' : 'text';
-                            const step = (type === 'float') ? 'any' : '1';
-                            html += `<input type="${inputType}" name="value" id="value" class="form-control"
+                            default: // string, integer, float
+                                const inputType = (type === 'integer' || type === 'float') ? 'number' : 'text';
+                                const step = (type === 'float') ? 'any' : '1';
+                                html += `<input type="${inputType}" name="value" id="value" class="form-control"
                     value="${currentValue}" ${inputType === 'number' ? `step="${step}"` : ''} required>`;
+                        }
+
+                        $('#value-container').html(html);
                     }
 
-                    $('#value-container').html(html);
-                }
-
-                // Initialize
-                $('#type').change(renderValueField);
-                renderValueField();
+                    // Initialize
+                    $('#type').change(renderValueField);
+                    renderValueField();
+                });
             });
         </script>
     </x-slot>

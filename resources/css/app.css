@@ -7,48 +7,48 @@
       1. COLOR PALETTE (CSS Variables)
 --------------------------------------------------- */
 :root {
-  --color-primary: #0c2556;
+  --color-primary: #0d3b66;
   /* Sapphire Blue */
-  --color-primary-hover: #082153;
-  --color-primary-active: #021e55;
+  --color-primary-hover: #0b3560;
+  --color-primary-active: #092c55;
 
-  --color-secondary: #e57300;
+  --color-secondary: #e67e22;
   /* Amber Orange */
-  --color-secondary-hover: #ff8800;
-  --color-secondary-active: #b45309;
+  --color-secondary-hover: #f08c28;
+  --color-secondary-active: #c76d1a;
 
   --color-success: #16a34a;
   /* Emerald Green */
   --color-success-hover: #22c55e;
   --color-success-active: #15803d;
 
-  --color-danger: #be123c;
+  --color-danger: #c1121f;
   /* Crimson Red */
-  --color-danger-hover: #e11d48;
-  --color-danger-active: #9f1239;
+  --color-danger-hover: #e31b25;
+  --color-danger-active: #9f0f1a;
 
-  --color-warning: #eab308;
+  --color-warning: #f5b700;
   /* Gold */
-  --color-warning-hover: #fde047;
-  --color-warning-active: #ca8a04;
+  --color-warning-hover: #ffcd38;
+  --color-warning-active: #d49900;
 
-  --color-info: #0891b2;
+  --color-info: #0277bd;
   /* Sea Blue */
-  --color-info-hover: #38bdf8;
-  --color-info-active: #0e7490;
+  --color-info-hover: #039be5;
+  --color-info-active: #01579b;
 
-  --color-light: #f8fafc;
+  --color-light: #f9fafb;
   /* Off White */
-  --color-light-hover: #f1f5f9;
+  --color-light-hover: #f3f4f6;
   --color-light-active: #e5e7eb;
 
-  --color-dark: #1e293b;
+  --color-dark: #1f2937;
   /* Deep Navy */
-  --color-dark-hover: #334155;
-  --color-dark-active: #0f172a;
+  --color-dark-hover: #374151;
+  --color-dark-active: #111827;
 
-  --color-text-light: #f8fafc;
-  --color-text-dark: #0f172a;
+  --color-text-light: #ffffff;
+  --color-text-dark: #111827;
   --color-border: #e5e7eb;
   --color-card-bg: #ffffff;
   --color-dropdown-bg: #232e3d;
@@ -717,9 +717,31 @@
 .btn-link.disabled {
   color: var(--color-light) !important;
 }
+
 .sidebar-layout .bi-chevron-down {
   transition: 0.5s ease-in-out;
 }
+
 .sidebar-layout .collapsed .bi-chevron-down {
   transform: rotate(-180deg);
+}
+
+.hs_brand {
+  width: 250px;
+}
+.swal2-confirm{
+  border:1px solid var(--color-primary);
+  background-color: var(--color-primary);
+}
+.swal2-confirm:hover,.swal2-confirm:active{
+  background-color: unset;
+  color: var(--color-primary);
+}
+.swal2-cancel{
+  border:1px solid var(--color-secondary);
+  background-color: var(--color-secondary);
+}
+.swal2-cancel:hover,.swal2-cancel:active{
+  color: var(--color-secondary);
+  background-color: unset;
 }
