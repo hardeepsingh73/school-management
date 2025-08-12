@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -12,18 +13,20 @@ use Illuminate\Validation\Rule;
 class UserController extends Controller
 {
     /**
-     * Apply permissions middleware for various actions.
+     * Define middleware permissions for specific controller actions.
      *
-     * Using the constructor ensures permissions are checked automatically
-     * for each action without manually adding checks inside methods.
+     * Note: The 'edit users' permission is checked via Gate/Policy in edit/update.
+     *
+     * @return \Illuminate\Routing\Controllers\Middleware[]
      */
-    public function __construct()
+    public static function middleware(): array
     {
-        $this->middleware('permission:view users')->only('index');
-        $this->middleware('permission:create users')->only(['store']);
-        $this->middleware('permission:delete users')->only('destroy');
+        return [
+            new Middleware('permission:view users', only: ['index']),
+            new Middleware('permission:create users', only: ['create', 'store']),
+            new Middleware('permission:delete users', only: ['destroy']),
+        ];
     }
-
     /**
      * Display a paginated list of users.
      *
