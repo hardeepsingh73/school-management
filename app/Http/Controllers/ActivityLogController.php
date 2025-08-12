@@ -148,7 +148,7 @@ class ActivityLogController extends Controller
     /**
      * Clear all activity logs from the database.
      *
-     * ⚠ Use with caution! This action is irreversible.
+     *  Use with caution! This action is irreversible.
      *
      * @return \Illuminate\Http\RedirectResponse
      */

@@ -95,7 +95,7 @@ class LoginHistoryController extends Controller implements HasMiddleware
     /**
      * Clear all login history logs from the database.
      *
-     * ⚠ This action is irreversible.
+     *  This action is irreversible.
      * Should be restricted to only authorized administrators.
      *
      * @return \Illuminate\Http\RedirectResponse

@@ -87,7 +87,7 @@ class ApiLogController extends Controller
     /**
      * Clear (delete) all api log entries from storage.
      *
-     * ⚠ This action is irreversible; use middleware to restrict access.
+     *  This action is irreversible; use middleware to restrict access.
      *
      * @return \Illuminate\Http\RedirectResponse
      */

@@ -14,7 +14,7 @@ class ShadowLoginController extends Controller
      * This method stores the currently authenticated admin's ID in the session
      * so you can revert later, then logs in as the specified target user.
      *
-     * ⚠ SECURITY NOTE:
+     *  SECURITY NOTE:
      *   - Restrict this route using middleware/permission checks (e.g., only super admins).
      *   - Always log impersonation actions for audit purposes.
      *

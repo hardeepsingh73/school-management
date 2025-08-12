@@ -76,7 +76,7 @@ class ErrorLogController extends Controller implements HasMiddleware
     /**
      * Clear (delete) all error log entries from storage.
      *
-     * ⚠ This action is irreversible; use middleware to restrict access.
+     *  This action is irreversible; use middleware to restrict access.
      *
      * @return \Illuminate\Http\RedirectResponse
      */

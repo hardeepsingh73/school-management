@@ -128,8 +128,8 @@
                                 <td>{{ $log->created_at->format('d M Y H:i') }}</td>
                                 <td>
                                     <a href="{{ route('api-logs.show', $log->id) }}"
-                                        class="btn btn-sm btn-outline-primary">
-                                        <i class="bi bi-eye"></i> View
+                                        class="btn btn-info btn-sm">
+                                        <i class="bi bi-eye-fill"></i>
                                     </a>
                                 </td>
                             </tr>

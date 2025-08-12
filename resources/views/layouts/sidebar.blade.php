@@ -132,6 +132,18 @@
                     </li>
                 @endif
             @endcan
+            <!-- API Logs -->
+            @can('view api logs')
+                @if (setting('api_logs', true))
+                    <li class="{{ request()->routeIs('api-logs.*') ? 'active' : '' }}">
+                        <a href="{{ route('api-logs.index') }}"
+                            class="list-group-item list-group-item-action d-flex align-items-center {{ request()->routeIs('api-logs.*') ? 'active fw-semibold' : '' }}">
+                            <i class="bi bi-activity me-2 fs-5"></i>
+                            <span>API Logs</span>
+                        </a>
+                    </li>
+                @endif
+            @endcan
         </ul>
     </div>
 </div>

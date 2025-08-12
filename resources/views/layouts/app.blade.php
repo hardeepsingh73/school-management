@@ -96,7 +96,7 @@
                 });
             @endif
 
-            // ⚠️ Warning Alert
+            // ️ Warning Alert
             @if (session()->has('warning'))
                 Swal.fire({
                     icon: 'warning',
