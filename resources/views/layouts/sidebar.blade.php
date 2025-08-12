@@ -1,7 +1,5 @@
 <div id="sidebar" class="bg-white border-end d-none d-lg-block shadow-sm" style="width: 250px;">
-
     <div class="list-group list-group-flush vh-100 overflow-auto">
-
         <ul class="side-menu list-unstyled mb-0">
 
             <!-- Dashboard -->
@@ -13,7 +11,7 @@
                 </a>
             </li>
 
-            <!-- Management Section Title -->
+            <!-- ===================== MANAGEMENT ===================== -->
             <li class="px-3 pt-3 pb-2">
                 <span class="text-uppercase small fw-bold text-muted">Management</span>
             </li>
@@ -47,22 +45,22 @@
                             </li>
                         @endcan
 
-                        @can('view roles')
-                            <li class="{{ request()->routeIs('roles.*') ? 'active' : '' }}">
-                                <a href="{{ route('roles.index') }}"
-                                    class="list-group-item list-group-item-action d-flex align-items-center {{ request()->routeIs('roles.*') ? 'active fw-semibold' : '' }}">
-                                    <i class="bi bi-person-badge me-2"></i>
-                                    <span>Roles</span>
-                                </a>
-                            </li>
-                        @endcan
-
                         @can('view permissions')
                             <li class="{{ request()->routeIs('permissions.*') ? 'active' : '' }}">
                                 <a href="{{ route('permissions.index') }}"
                                     class="list-group-item list-group-item-action d-flex align-items-center {{ request()->routeIs('permissions.*') ? 'active fw-semibold' : '' }}">
                                     <i class="bi bi-key me-2"></i>
                                     <span>Permissions</span>
+                                </a>
+                            </li>
+                        @endcan
+
+                        @can('view roles')
+                            <li class="{{ request()->routeIs('roles.*') ? 'active' : '' }}">
+                                <a href="{{ route('roles.index') }}"
+                                    class="list-group-item list-group-item-action d-flex align-items-center {{ request()->routeIs('roles.*') ? 'active fw-semibold' : '' }}">
+                                    <i class="bi bi-person-badge me-2"></i>
+                                    <span>Roles</span>
                                 </a>
                             </li>
                         @endcan
@@ -81,20 +79,11 @@
                 </li>
             @endcan
 
-            <!-- Login History -->
-            @can('view login history')
-                @if (setting('login_history', true))
-                    <li class="{{ request()->routeIs('login-history.*') ? 'active' : '' }}">
-                        <a href="{{ route('login-history.index') }}"
-                            class="list-group-item list-group-item-action d-flex align-items-center {{ request()->routeIs('login-history.*') ? 'active fw-semibold' : '' }}">
-                            <i class="bi bi-clock-history me-2 fs-5"></i>
-                            <span>Login History</span>
-                        </a>
-                    </li>
-                @endif
-            @endcan
+            <!-- ===================== LOGS ===================== -->
+            <li class="px-3 pt-3 pb-2">
+                <span class="text-uppercase small fw-bold text-muted">Logs</span>
+            </li>
 
-            <!-- Activity Logs -->
             @can('view activity logs')
                 @if (setting('activity_logs', true))
                     <li class="{{ request()->routeIs('activity-logs.*') ? 'active' : '' }}">
@@ -107,7 +96,30 @@
                 @endif
             @endcan
 
-            <!-- Error Logs -->
+            @can('view api logs')
+                @if (setting('api_logs', true))
+                    <li class="{{ request()->routeIs('api-logs.*') ? 'active' : '' }}">
+                        <a href="{{ route('api-logs.index') }}"
+                            class="list-group-item list-group-item-action d-flex align-items-center {{ request()->routeIs('api-logs.*') ? 'active fw-semibold' : '' }}">
+                            <i class="bi bi-activity me-2 fs-5"></i>
+                            <span>API Logs</span>
+                        </a>
+                    </li>
+                @endif
+            @endcan
+
+            @can('view email logs')
+                @if (setting('email_logs', true))
+                    <li class="{{ request()->routeIs('email-logs.*') ? 'active' : '' }}">
+                        <a href="{{ route('email-logs.index') }}"
+                            class="list-group-item list-group-item-action d-flex align-items-center {{ request()->routeIs('email-logs.*') ? 'active fw-semibold' : '' }}">
+                            <i class="bi bi-envelope me-2 fs-5"></i>
+                            <span>Email Logs</span>
+                        </a>
+                    </li>
+                @endif
+            @endcan
+
             @can('view error logs')
                 @if (setting('error_logs', true))
                     <li class="{{ request()->routeIs('error-logs.*') ? 'active' : '' }}">
@@ -120,26 +132,13 @@
                 @endif
             @endcan
 
-            <!-- Email Logs -->
-            @can('view email logs')
-                @if (setting('email_logs', true))
-                    <li class="{{ request()->routeIs('email-logs.*') ? 'active' : '' }}">
-                        <a href="{{ route('email-logs.index') }}"
-                            class="list-group-item list-group-item-action d-flex align-items-center {{ request()->routeIs('email-logs.*') ? 'active fw-semibold' : '' }}">
-                            <i class="bi bi-envelope me-2 fs-5"></i>
-                            <span>Email Logs</span>
-                        </a>
-                    </li>
-                @endif
-            @endcan
-            <!-- API Logs -->
-            @can('view api logs')
-                @if (setting('api_logs', true))
-                    <li class="{{ request()->routeIs('api-logs.*') ? 'active' : '' }}">
-                        <a href="{{ route('api-logs.index') }}"
-                            class="list-group-item list-group-item-action d-flex align-items-center {{ request()->routeIs('api-logs.*') ? 'active fw-semibold' : '' }}">
-                            <i class="bi bi-activity me-2 fs-5"></i>
-                            <span>API Logs</span>
+            @can('view login history')
+                @if (setting('login_history', true))
+                    <li class="{{ request()->routeIs('login-history.*') ? 'active' : '' }}">
+                        <a href="{{ route('login-history.index') }}"
+                            class="list-group-item list-group-item-action d-flex align-items-center {{ request()->routeIs('login-history.*') ? 'active fw-semibold' : '' }}">
+                            <i class="bi bi-clock-history me-2 fs-5"></i>
+                            <span>Login History</span>
                         </a>
                     </li>
                 @endif
