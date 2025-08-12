@@ -15,7 +15,7 @@ trait LogsActivity
      */
     protected static function bootLogsActivity()
     {
-        // Subscribe to events: created, updated, deleted on the model
+        // Subscribe to events: created, updated, deleted, restored on the model
         foreach (static::getModelEvents() as $event) {
             // Register listener for each event
             static::$event(function (Model $model) use ($event) {
@@ -59,10 +59,10 @@ trait LogsActivity
             'causer_id'     => auth()->id(),
             'causer_type'   => auth()->user() ? get_class(auth()->user()) : null,
             'properties'    => $this->getActivityProperties($event),
-            'ip_address'    => request()->ip(),
-            'user_agent'    => request()->userAgent(),
-            'url'           => request()->fullUrl(),
-            'method'        => request()->method(),
+            'ip_address' => app()->runningInConsole() ? null : request()->ip(),
+            'user_agent' => app()->runningInConsole() ? null : request()->userAgent(),
+            'url'        => app()->runningInConsole() ? null : request()->fullUrl(),
+            'method'     => app()->runningInConsole() ? null : request()->method(),
         ]);
     }
 
@@ -80,6 +80,7 @@ trait LogsActivity
             'created' => "Created {$modelName}",
             'updated' => "Updated {$modelName}",
             'deleted' => "Deleted {$modelName}",
+            'restored' => "Restored {$modelName}",
             default => "Performed {$event} on {$modelName}",
         };
     }
