@@ -30,21 +30,38 @@ class RolesAndPermissionsSeeder extends Seeder
             // ----------------------
             $permissions = [
                 // User management
-                'create users', 'delete users', 'edit users', 'view users',
+                'create users',
+                'delete users',
+                'edit users',
+                'view users',
 
                 // Role management
-                'create roles', 'delete roles', 'edit roles', 'view roles',
+                'create roles',
+                'delete roles',
+                'edit roles',
+                'view roles',
 
                 // Permission management
-                'create permissions', 'delete permissions', 'edit permissions', 'view permissions',
+                'create permissions',
+                'delete permissions',
+                'edit permissions',
+                'view permissions',
 
                 // Settings
-                'create settings', 'delete settings', 'edit settings', 'view settings',
+                'create settings',
+                'delete settings',
+                'edit settings',
+                'view settings',
 
                 // Logs
-                'view activity logs', 'clear activity logs',
-                'view error logs', 'clear error logs',
-                'view login history', 'clear login history',
+                'view activity logs',
+                'clear activity logs',
+                'view error logs',
+                'clear error logs',
+                'view login history',
+                'clear login history',
+                'view email logs',
+                'clear email logs',
 
                 // Basic
                 'view dashboard',
@@ -65,9 +82,14 @@ class RolesAndPermissionsSeeder extends Seeder
             // Admin - restricted permissions
             $admin = Role::firstOrCreate(['name' => 'admin']);
             $admin->syncPermissions([
-                'create users', 'delete users', 'edit users', 'view users',
-                'view dashboard', 'view activity logs',
-                'view error logs', 'view login history',
+                'create users',
+                'delete users',
+                'edit users',
+                'view users',
+                'view dashboard',
+                'view activity logs',
+                'view error logs',
+                'view login history',
             ]);
 
             // Regular User - minimal permissions

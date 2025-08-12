@@ -19,6 +19,7 @@ return new class extends Migration
             $table->integer('line')->nullable();
             $table->string('url')->nullable();
             $table->string('method')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

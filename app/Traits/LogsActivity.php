@@ -17,7 +17,6 @@ trait LogsActivity
     {
         // Subscribe to events: created, updated, deleted on the model
         foreach (static::getModelEvents() as $event) {
-
             // Register listener for each event
             static::$event(function (Model $model) use ($event) {
                 $model->logActivity($event);
@@ -32,7 +31,7 @@ trait LogsActivity
      */
     protected static function getModelEvents()
     {
-        return ['created', 'updated', 'deleted'];
+        return ['created', 'updated', 'deleted', 'restored'];
     }
 
     /**

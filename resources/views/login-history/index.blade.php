@@ -29,9 +29,9 @@
             <div class="d-flex align-items-center gap-2">
                 @can('clear login history')
                     <form id="clear-login-history-form" action="{{ route('login-history.clear') }}" method="POST"
-                        class="mb-0">
+                        class="mb-0 clearLogs">
                         @csrf
-                        <button type="submit" class="btn btn-danger btn-sm clearLogs">
+                        <button type="submit" class="btn btn-danger btn-sm">
                             <i class="bi bi-trash3-fill me-1"></i> Clear Logs
                         </button>
                     </form>

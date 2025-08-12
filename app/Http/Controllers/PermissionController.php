@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Spatie\Permission\Models\Permission;
@@ -136,24 +136,23 @@ class PermissionController extends Controller implements HasMiddleware
      * Returns JSON response indicating success or failure.
      *
      * @param  \Spatie\Permission\Models\Permission  $permission
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy(Permission $permission): JsonResponse
+
+    public function destroy(Permission $permission): RedirectResponse
     {
         // Ensure the current user is authorized to delete the permission
         if (Gate::denies('delete', $permission)) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Unauthorized action',
-            ], 403);
+            return redirect()
+                ->route('permission.index')
+                ->with('error', 'Unauthorized action.');
         }
 
-        // Delete the permission
         $permission->delete();
 
-        return response()->json([
-            'status' => true,
-            'message' => 'Permission deleted successfully.',
-        ]);
+        // Redirect with success message
+        return redirect()
+            ->route('permissions.index')
+            ->with('success', 'Permission deleted successfully.');
     }
 }

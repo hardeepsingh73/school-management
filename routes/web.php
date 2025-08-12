@@ -84,6 +84,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [ActivityLogController::class, 'index'])->name('index');
         Route::get('/{activityLog}', [ActivityLogController::class, 'show'])->name('show');
         Route::post('/clear', [ActivityLogController::class, 'clear'])->name('clear');
+        Route::patch('/{id}/restore', [ActivityLogController::class, 'restore'])->name('restore');
     });
 });
 Route::middleware(['auth', 'is_superadmin'])->group(function () {

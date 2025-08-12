@@ -6,6 +6,7 @@ use App\Models\ActivityLog;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ActivityLogController extends Controller
 {
@@ -53,7 +54,7 @@ class ActivityLogController extends Controller
      */
     public function show(ActivityLog $activityLog)
     {
-        return view('activity-logs.show', compact('activityLog'));
+        return view('activity-logs.view', compact('activityLog'));
     }
 
     /**
@@ -139,5 +140,49 @@ class ActivityLogController extends Controller
         return redirect()
             ->route('activity-logs.index')
             ->with('success', 'All activity logs have been cleared.');
+    }
+    public function restore($id)
+    {
+        $activityLog = ActivityLog::findOrFail($id);
+
+        $modelClass = $activityLog->subject_type;
+        $modelId    = $activityLog->subject_id;
+
+        if (!class_exists($modelClass)) {
+            return redirect()->back()->with('error', 'Model class does not exist.');
+        }
+
+        // Handle Deleted Event
+        if ($activityLog->event === 'deleted') {
+            if (!in_array(SoftDeletes::class, class_uses_recursive($modelClass))) {
+                return redirect()->back()->with('error', 'This model does not support restoring.');
+            }
+
+            $model = $modelClass::withTrashed()->find($modelId);
+            if (!$model || !$model->trashed()) {
+                return redirect()->back()->with('error', 'Record not found or already active.');
+            }
+
+            $model->restore();
+            return redirect()->back()->with('success', class_basename($modelClass) . ' restored successfully.');
+        }
+
+        // Handle Updated Event - revert to old properties
+        if ($activityLog->event === 'updated') {
+            $model = $modelClass::find($modelId);
+            if (!$model) {
+                return redirect()->back()->with('error', 'Record not found.');
+            }
+
+            $oldValues = $activityLog->properties['old'] ?? null;
+            if (!$oldValues) {
+                return redirect()->back()->with('error', 'No old values found to revert.');
+            }
+
+            $model->update($oldValues);
+            return redirect()->back()->with('success', class_basename($modelClass) . ' reverted to previous values.');
+        }
+
+        return redirect()->back()->with('error', 'This action is only available for deleted or updated events.');
     }
 }

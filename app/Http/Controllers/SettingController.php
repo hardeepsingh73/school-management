@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Setting;
 use App\Services\SearchService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Routing\Controllers\Middleware;
@@ -226,18 +227,22 @@ class SettingController extends Controller
      * If the setting is an image type, also removes the associated file.
      *
      * @param \App\Models\Setting $setting
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy(Setting $setting)
+    public function destroy(Setting $setting): RedirectResponse
     {
         // Remove physical image file if applicable before deleting DB record
         if ($setting->type === 'image' && $setting->value) {
             Storage::disk('public')->delete($setting->value);
         }
 
+        // Soft or hard delete depending on your model setup
         $setting->delete();
 
-        return response()->json(['status' => true, 'message' => 'Setting deleted successfully']);
+        // Redirect back to settings index with success message
+        return redirect()
+            ->route('settings.index')
+            ->with('success', 'Setting deleted successfully.');
     }
 
     /**

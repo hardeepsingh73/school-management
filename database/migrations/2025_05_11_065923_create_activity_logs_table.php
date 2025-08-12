@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('user_agent')->nullable();
             $table->string('url')->nullable();
             $table->string('method')->nullable(); // HTTP method (GET, POST, etc.)
+            $table->softDeletes();
             $table->timestamps();
 
             $table->index(['subject_id', 'subject_type']);

@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use App\Services\SearchService;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Spatie\Permission\Models\Role;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
@@ -251,33 +251,27 @@ class UserController extends Controller implements HasMiddleware
      * Uses Gate to authorize deletion.
      *
      * @param \App\Models\User $user
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy(User $user): JsonResponse
+
+    public function destroy(User $user): RedirectResponse
     {
-        // Prevent deletion of critical/system accounts
-        if (in_array($user->id, [1, 4])) {
-            return response()->json([
-                'status' => false,
-                'message' => 'This user cannot be deleted.',
-            ], 403);
-        }
-
-        // Authorization check via policy or Gate
+        // Authorization check via Gate
         if (Gate::denies('delete', $user)) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Unauthorized action',
-            ], 403);
+            return redirect()
+                ->route('users.index')
+                ->with('error', 'Unauthorized action.');
         }
 
+        // Policy-based authorization (if you have 'manage' policy)
         $this->authorize('manage', $user);
 
+        // Soft delete user
         $user->delete();
 
-        return response()->json([
-            'status' => true,
-            'message' => 'User deleted successfully.',
-        ]);
+        // Redirect back to index with success message
+        return redirect()
+            ->route('users.index')
+            ->with('success', 'User deleted successfully.');
     }
 }

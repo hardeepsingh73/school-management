@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Spatie\Permission\Models\Permission;
@@ -84,9 +84,9 @@ class RoleController extends Controller implements HasMiddleware
 
             // Assign selected permissions, if any
             if (!empty($request->permissions)) {
-                foreach ($request->permissions as $permissionName) {
-                    $role->givePermissionTo($permissionName);
-                }
+                // Get the permission names based on the IDs
+                $permissions = Permission::whereIn('id', $request->permissions)->pluck('name');
+                $role->givePermissionTo($permissions);
             }
 
             return redirect()->route('roles.index')
@@ -148,11 +148,10 @@ class RoleController extends Controller implements HasMiddleware
 
             // Synchronize the role's permissions
             if (!empty($request->permissions)) {
-                // Find permission names corresponding to selected permission IDs
-                $permissionNames = Permission::whereIn('id', $request->permissions)->pluck('name');
-                $role->syncPermissions($permissionNames);
+                // Get the permission names based on the IDs
+                $permissions = Permission::whereIn('id', $request->permissions)->pluck('name');
+                $role->syncPermissions($permissions);
             } else {
-                // If no permissions selected, clear all
                 $role->syncPermissions([]);
             }
 
@@ -172,24 +171,23 @@ class RoleController extends Controller implements HasMiddleware
      * Checks authorization via Gate before deleting.
      *
      * @param  \Spatie\Permission\Models\Role  $role
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy(Role $role): JsonResponse
+    public function destroy(Role $role): RedirectResponse
     {
         // Authorization check: deny if user can't delete role
         if (Gate::denies('delete', $role)) {
-            return response()->json([
-                'status'  => false,
-                'message' => 'Unauthorized action',
-            ], 403);
+            return redirect()
+                ->route('roles.index')
+                ->with('error', 'Unauthorized action.');
         }
 
         // Delete the role
         $role->delete();
 
-        return response()->json([
-            'status'  => true,
-            'message' => 'Role deleted successfully.',
-        ]);
+        // Redirect with success message
+        return redirect()
+            ->route('roles.index')
+            ->with('success', 'Role deleted successfully.');
     }
 }

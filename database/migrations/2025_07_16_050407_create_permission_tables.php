@@ -24,6 +24,7 @@ return new class extends Migration
             $table->bigIncrements('id');
             $table->string('name', 125);       // Reduced length from default 255 to 125
             $table->string('guard_name', 125); // Reduced length from default 255 to 125
+            $table->softDeletes();
             $table->timestamps();
 
             $table->unique(['name', 'guard_name']);
@@ -37,6 +38,7 @@ return new class extends Migration
             }
             $table->string('name', 125);       // Reduced length
             $table->string('guard_name', 125); // Reduced length
+            $table->softDeletes();
             $table->timestamps();
             if ($teams || config('permission.testing')) {
                 $table->unique([$columnNames['team_foreign_key'], 'name', 'guard_name']);

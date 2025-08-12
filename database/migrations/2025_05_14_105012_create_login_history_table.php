@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('ip_address');
             $table->string('user_agent')->nullable();
             $table->timestamp('login_at');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

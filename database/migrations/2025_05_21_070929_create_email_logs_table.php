@@ -31,6 +31,7 @@ return new class extends Migration
             $table->text('error_message')->nullable(); 
             // Stores error message if email sending fails (optional)
 
+            $table->softDeletes();
             $table->timestamps(); 
             // Automatically creates 'created_at' and 'updated_at' columns
         });

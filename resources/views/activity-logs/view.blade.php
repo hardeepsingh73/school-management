@@ -48,6 +48,7 @@
 
                 <!-- Body -->
                 <div class="card-body">
+
                     <!-- Basic Info -->
                     <div class="row mb-4">
                         <div class="col-md-3">
@@ -85,18 +86,67 @@
 
                     <hr class="my-4">
 
-                    <!-- Subject / Causer / Batch UUID -->
+                    <!-- Subject / Restore Button -->
                     <div class="row mb-4">
                         <div class="col-md-4">
                             <strong class="text-muted d-block small">Subject:</strong>
+                            {{-- Subject Display + Restore Button --}}
                             @if ($activityLog->subject_type && $activityLog->subject_id)
-                                <span class="text-dark">{{ class_basename($activityLog->subject_type) }}
-                                    #{{ $activityLog->subject_id }}
-                                </span>
+                                @php
+                                    $subjectClass = $activityLog->subject_type;
+                                    $subject = null;
+
+                                    if (
+                                        class_exists($subjectClass) &&
+                                        in_array(
+                                            Illuminate\Database\Eloquent\SoftDeletes::class,
+                                            class_uses_recursive($subjectClass),
+                                        )
+                                    ) {
+                                        $subject = $subjectClass::withTrashed()->find($activityLog->subject_id);
+                                    } elseif (class_exists($subjectClass)) {
+                                        $subject = $subjectClass::find($activityLog->subject_id);
+                                    }
+                                @endphp
+
+                                @if ($subject)
+                                    <span class="text-dark">
+                                        {{ class_basename($activityLog->subject_type) }}
+                                        #{{ $activityLog->subject_id }}
+                                    </span>
+
+                                    {{-- Deleted → Restore --}}
+                                    @if ($activityLog->event === 'deleted' && method_exists($subject, 'trashed') && $subject->trashed())
+                                        <form action="{{ route('activity-logs.restore', $activityLog->id) }}"
+                                            method="POST" class="d-inline">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button type="submit" class="btn btn-sm btn-success ms-2">
+                                                <i class="bi bi-arrow-counterclockwise"></i> Restore
+                                            </button>
+                                        </form>
+                                    @endif
+
+                                    {{-- Updated → Revert --}}
+                                    @if ($activityLog->event === 'updated')
+                                        <form action="{{ route('activity-logs.restore', $activityLog->id) }}"
+                                            method="POST" class="d-inline">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button type="submit" class="btn btn-sm btn-warning ms-2">
+                                                <i class="bi bi-arrow-counterclockwise"></i> Revert to Old
+                                            </button>
+                                        </form>
+                                    @endif
+                                @else
+                                    <span class="text-muted fst-italic">Record not found</span>
+                                @endif
                             @else
                                 <span class="text-muted fst-italic">No specific subject</span>
                             @endif
                         </div>
+
+                        <!-- Causer -->
                         <div class="col-md-4">
                             <strong class="text-muted d-block small">Causer:</strong>
                             @if ($activityLog->causer_type && $activityLog->causer_id)
@@ -110,6 +160,8 @@
                                 <span class="text-muted fst-italic">System / Guest</span>
                             @endif
                         </div>
+
+                        <!-- Batch UUID -->
                         <div class="col-md-4">
                             <strong class="text-muted d-block small">Batch UUID:</strong>
                             <span class="text-dark">{{ $activityLog->batch_uuid ?: 'N/A' }}</span>

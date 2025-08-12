@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * EmailLog Model
@@ -12,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class EmailLog extends Model
 {
+    use SoftDeletes;
     /**
      * The attributes that are mass assignable.
      * Only these fields can be filled via mass assignment (e.g., EmailLog::create()).

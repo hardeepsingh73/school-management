@@ -5,6 +5,10 @@ namespace App\Providers;
 use App\Models\User;
 use App\Policies\UserPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Spatie\Permission\Models\Permission as SpatiePermission;
+use Spatie\Permission\Models\Role as SpatieRole;
+use App\Models\Permission;
+use App\Models\Role;
 
 /**
  * Class AuthServiceProvider
@@ -40,7 +44,8 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        // Currently nothing extra is required here for policies
+        $this->app->bind(SpatiePermission::class, Permission::class);
+        $this->app->bind(SpatieRole::class, Role::class);
     }
 
     /**

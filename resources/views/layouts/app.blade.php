@@ -55,28 +55,6 @@
 
                 {{-- Flash Messages --}}
                 <div class="container-fluid px-0">
-
-                    @if (session()->has('success'))
-                        <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
-                            <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"
-                                aria-label="Close"></button>
-                        </div>
-                    @endif
-
-                    @if ($errors->any())
-                        <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
-                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                            <ul class="mb-0 ps-3">
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"
-                                aria-label="Close"></button>
-                        </div>
-                    @endif
-
                     <div class="row justify-content-center">
                         <div class="col-xxl-10">
                             {{-- Page Slot Content --}}
@@ -94,7 +72,52 @@
         {{ $script }}
     @endisset
     @stack('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
 
+            // ✅ Success Alert
+            @if (session()->has('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: "{{ session('success') }}",
+                    showConfirmButton: true,
+                    timer: 3000
+                });
+            @endif
+
+            // ❌ Error Alert (single messages from session)
+            @if (session()->has('error'))
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: "{{ session('error') }}",
+                    showConfirmButton: true
+                });
+            @endif
+
+            // ⚠️ Warning Alert
+            @if (session()->has('warning'))
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Warning',
+                    text: "{{ session('warning') }}",
+                    showConfirmButton: true
+                });
+            @endif
+
+            // ❌ Validation Errors (from $errors)
+            @if ($errors->any())
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Validation Error',
+                    html: `{!! implode('<br>', $errors->all()) !!}`,
+                    showConfirmButton: true
+                });
+            @endif
+
+        });
+    </script>
 </body>
 
 </html>
