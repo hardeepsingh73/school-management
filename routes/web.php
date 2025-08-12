@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\EmailLogController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ErrorLogController;
 use App\Http\Controllers\LoginHistoryController;
@@ -72,6 +73,11 @@ Route::middleware('auth')->group(function () {
     Route::prefix('error-logs')->name('error-logs.')->group(function () {
         Route::match(['get', 'post'], '/', [ErrorLogController::class, 'index'])->name('index');
         Route::post('/clear', [ErrorLogController::class, 'clear'])->name('clear');
+    });
+    Route::prefix('email-logs')->name('email-logs.')->group(function () {
+        Route::match(['get', 'post'], '/', [EmailLogController::class, 'index'])->name('index');
+        Route::post('/clear', [emailLogController::class, 'clear'])->name('clear');
+        Route::get('/{id}/show', [emailLogController::class,  'show'])->name('show');
     });
 
     Route::prefix('activity-logs')->name('activity-logs.')->group(function () {

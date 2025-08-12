@@ -1,9 +1,51 @@
 curl -X GET http://127.0.0.1:8000/api/users \
   -H "Accept: application/json" \
-  -H "Authorization: Bearer YOUR_TOKEN_HERE"
+  -H "Authorization: Bearer 2|3rQivhNykC585GMUTceQDyYivYK3ChgntcM8QzH0945c6a58"
 
 
   curl -X POST http://127.0.0.1:8000/api/login \
   -H "Accept: application/json" \
   -H "Content-Type: application/json" \
   -d '{"email": "admin@example.com", "password": "password"}'
+
+sitemap code
+  
+    public function index()
+    {
+        $urls = [];
+
+        // Get all routes
+        $routes = collect(Route::getRoutes());
+
+        foreach ($routes as $route) {
+            $uri = $route->uri();
+
+            // Exclude routes with parameters (optional: or handle dynamic generation)
+            if (strpos($uri, '{') === false) {
+                $urls[] = [
+                    'loc' => URL::to($uri),
+                    'lastmod' => Carbon::now()->toAtomString(), // Or customize per route
+                    'changefreq' => 'weekly',
+                    'priority' => '0.7',
+                ];
+            }
+        }
+
+        $xml = $this->generateSitemap($urls);
+
+        return response($xml, 200)->header('Content-Type', 'application/xml');
+    }
+
+    private function generateSitemap(array $urls)
+    {
+        $xml = new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><urlset/>');
+        $xml->addAttribute('xmlns', 'http://www.sitemaps.org/schemas/sitemap/0.9');
+        foreach ($urls as $url) {
+            $urlTag = $xml->addChild('url');
+            $urlTag->addChild('loc', $url['loc']);
+            $urlTag->addChild('lastmod', $url['lastmod']);
+            $urlTag->addChild('changefreq', $url['changefreq']);
+            $urlTag->addChild('priority', $url['priority']);
+        }
+        return $xml->asXML();
+    }
