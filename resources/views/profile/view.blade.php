@@ -214,6 +214,8 @@
                                 showCancelButton: true,
                                 confirmButtonText: 'Yes, send it',
                                 cancelButtonText: 'Cancel',
+                                confirmButtonColor: '#0d6efd',
+                                cancelButtonColor: '#6c757d'
                             }).then((result) => {
                                 if (result.isConfirmed) {
                                     $resendForm.off('submit').trigger('submit');

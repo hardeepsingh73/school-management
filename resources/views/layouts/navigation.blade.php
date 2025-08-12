@@ -138,6 +138,8 @@
                 text: "You'll need to log in again to access your account.",
                 icon: 'warning',
                 showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
                 confirmButtonText: 'Yes, log out',
                 cancelButtonText: 'Cancel'
             }).then((result) => {

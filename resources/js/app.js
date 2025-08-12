@@ -27,6 +27,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 text: "This action cannot be undone.",
                 icon: 'warning',
                 showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
                 confirmButtonText: 'Yes, delete it'
             }).then((result) => {
                 if (result.isConfirmed) {
@@ -47,6 +49,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 showCancelButton: true,
                 confirmButtonText: 'Yes, clear logs',
                 cancelButtonText: 'Cancel',
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
             }).then((result) => {
                 if (result.isConfirmed) {
                     $form.off('submit').trigger('submit');
