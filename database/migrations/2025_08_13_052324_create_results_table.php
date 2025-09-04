@@ -17,7 +17,6 @@ return new class extends Migration
             // Relationships
             $table->foreignId('student_id')->constrained('users')->onUpdate('cascade')->onDelete('cascade');
 
-            $table->foreignId('exam_id')->constrained()->onUpdate('cascade')->onDelete('cascade');
 
             $table->foreignId('class_id')->constrained('school_classes')->onUpdate('cascade');
 
@@ -35,7 +34,7 @@ return new class extends Migration
             $table->timestamps();
 
             // Indexes
-            $table->index(['student_id', 'exam_id']);
+            $table->index(['student_id']);
             $table->index('class_id');
             $table->index('grade');
         });
