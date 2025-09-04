@@ -18,8 +18,6 @@ return new class extends Migration
             $table->foreignId('student_id')->constrained('users')->onUpdate('cascade')->onDelete('cascade');
 
 
-            $table->foreignId('class_id')->constrained('school_classes')->onUpdate('cascade');
-
             // Result details
             $table->decimal('total_marks', 8, 2)->nullable();
             $table->decimal('obtained_marks', 8, 2)->nullable();
@@ -35,7 +33,6 @@ return new class extends Migration
 
             // Indexes
             $table->index(['student_id']);
-            $table->index('class_id');
             $table->index('grade');
         });
     }
