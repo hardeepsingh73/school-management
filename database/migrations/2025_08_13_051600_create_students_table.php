@@ -17,17 +17,13 @@ return new class extends Migration
             // Authentication relationship
             $table->foreignId('user_id')->constrained()->onUpdate('cascade')->onDelete('cascade');
 
-            // Academic structure
-            $table->foreignId('school_class_id')->constrained('school_classes')->comment('References class-section combination');
-
+          
             $table->json('additional_information')->nullable();
 
             // Timestamps and soft deletes
             $table->softDeletes();
             $table->timestamps();
 
-            // Indexes
-            $table->index(['school_class_id']);
         });
     }
 
