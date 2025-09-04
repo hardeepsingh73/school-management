@@ -19,7 +19,6 @@ return new class extends Migration
 
 
             // Department information
-            $table->foreignId('department_id')->constrained('departments')->onDelete('restrict');
 
             // Professional details
             $table->string('designation', 50)->nullable();
@@ -29,7 +28,6 @@ return new class extends Migration
             $table->timestamps();
 
             // Indexes
-            $table->index('department_id');
         });
     }
 
