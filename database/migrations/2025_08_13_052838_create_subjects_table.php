@@ -16,14 +16,12 @@ return new class extends Migration
 
             // Subject Identification
             $table->string('name', 100);
-            $table->foreignId('department_id')->nullable()->constrained('departments')->onDelete('set null');
             // Timestamps
             $table->softDeletes();
             $table->timestamps();
 
             // Indexes
             $table->index('name');
-            $table->index('department_id');
         });
     }
 
