@@ -18,7 +18,6 @@ return new class extends Migration
 
             $table->foreignId('teacher_id')->constrained('users')->onDelete('cascade');
 
-            $table->foreignId('subject_id')->constrained()->onDelete('cascade');
 
             // Schedule details
             $table->tinyInteger('day_of_week')->comment('0:Sunday, 1:Monday, ..., 6:Saturday');
