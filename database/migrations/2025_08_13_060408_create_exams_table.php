@@ -16,7 +16,6 @@ return new class extends Migration
 
 
             // Academic Information
-            $table->foreignId('class_id')->nullable()->constrained();
             $table->foreignId('subject_id')->nullable()->constrained();
 
             // Date Information
