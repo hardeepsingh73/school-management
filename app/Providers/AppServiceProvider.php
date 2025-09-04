@@ -28,7 +28,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         // Bind our custom exception handler in place of Laravel's default
-        $this->app->singleton(ExceptionHandler::class, Handler::class);
+        // $this->app->singleton(ExceptionHandler::class, Handler::class);
     }
 
     /**
