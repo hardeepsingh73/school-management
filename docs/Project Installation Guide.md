@@ -153,3 +153,6 @@ npm run build
 ---
 
 This guide should help you get your Laravel + Node.js project running smoothly.
+
+
+php artisan storage:link
