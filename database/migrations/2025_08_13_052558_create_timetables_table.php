@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
 
             // Relationships
-            $table->foreignId('class_id')->constrained('school_classes')->onDelete('cascade');
 
             $table->foreignId('teacher_id')->constrained('users')->onDelete('cascade');
 
@@ -39,7 +38,7 @@ return new class extends Migration
             $table->timestamps();
 
             // Indexes
-            $table->index(['class_id', 'day_of_week']);
+            $table->index([ 'day_of_week']);
             $table->index(['teacher_id', 'day_of_week']);
         });
     }
