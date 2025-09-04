@@ -4,38 +4,42 @@ namespace App\Http\Controllers;
 
 use App\Helpers\RoleDataHelper;
 use App\Helpers\Settings;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\UserRequest;
+use App\Mail\WelcomeMail;
 use App\Models\User;
+use App\Services\FileService;
 use App\Services\SearchService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
-use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rule;
-use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller implements HasMiddleware
 {
     /**
-     * The SearchService for applying query filters and searching users.
+     * Services for searching and file handling.
      *
      * @var \App\Services\SearchService
+     * @var \App\Services\FileService
      */
     protected $searchService;
-
+    protected $fileService;
     /**
-     * Inject dependencies.
+     * Inject dependencies into the controller.
      *
-     * @param \App\Services\SearchService $searchService
+     * @param  \App\Services\SearchService  $searchService
+     * @param  \App\Services\FileService  $fileService
      */
-    public function __construct(SearchService $searchService)
+    public function __construct(SearchService $searchService, FileService $fileService)
     {
         $this->searchService = $searchService;
+        $this->fileService = $fileService;
     }
-
     /**
      * Define middleware permissions for specific controller actions.
      *
@@ -48,6 +52,7 @@ class UserController extends Controller implements HasMiddleware
         return [
             new Middleware('permission:view users', only: ['index']),
             new Middleware('permission:create users', only: ['create', 'store']),
+            new Middleware('permission:edit users', only: ['edit', 'update']),
             new Middleware('permission:delete users', only: ['destroy']),
         ];
     }
@@ -58,18 +63,14 @@ class UserController extends Controller implements HasMiddleware
      * Uses RoleDataHelper to enforce role-based visibility restrictions.
      * Applies search filters via SearchService.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param App\Http\Requests\UserRequest $request
      * @return \Illuminate\View\View
      */
     public function index(Request $request)
     {
-        // Fetch all roles for filter dropdown or display
         $roles = Role::orderBy('name', 'ASC')->get();
-
-        // Get query builder with role-based user visibility from RoleDataHelper
         $query = RoleDataHelper::users(true);
 
-        // Apply search/filter for name, email, and role relationship via SearchService
         $users = $this->searchService->search(
             $query,
             [
@@ -83,10 +84,7 @@ class UserController extends Controller implements HasMiddleware
                 ]
             ],
             $request
-        );
-
-        // Order by newest and paginate results (10 per page)
-        $users = $users->latest()->paginate(10);
+        )->latest()->paginate(10);
 
         return view('users.index', compact('users', 'roles'));
     }
@@ -102,67 +100,75 @@ class UserController extends Controller implements HasMiddleware
     {
         $excludedRoles = [];
 
-        // Add superadmin role to excluded roles if current user is not superadmin
         if (!auth()->user()->hasRole(Settings::get('role_super_admin', 'superadmin'))) {
             $excludedRoles[] = Settings::get('role_super_admin', 'superadmin');
         }
 
-        // Fetch roles excluding the above
-        $roles = Role::whereNotIn('name', $excludedRoles)
-            ->orderBy('name', 'ASC')
-            ->get();
+        $roles = Role::whereNotIn('name', $excludedRoles)->orderBy('name')->get();
 
         return view('users.form', compact('roles'));
     }
-
     /**
-     * Store a newly created user in the database.
+     * Store a newly created user in storage.
      *
-     * Validates input, hashes password, assigns role, and uses transaction to ensure consistency.
+     * Validate input, create the user, assign role, handle profile image, and send welcome email.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param  App\Http\Requests\UserRequest  $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(Request $request)
+    public function store(UserRequest $request): RedirectResponse
     {
-        $rules = [
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-            'roles' => ['sometimes', 'string', Rule::exists('roles', 'name')],
-        ];
-
-        $validator = Validator::make($request->all(), $rules);
-
-        if ($validator->fails()) {
-            return redirect()->route('users.create')->withInput()->withErrors($validator);
-        }
-
         DB::beginTransaction();
 
         try {
-            $user = User::create([
+            $userData = [
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
-            ]);
+                'gender' => $request->gender,
+                'dob' => $request->dob,
+                'address' => $request->address,
+                'blood_group' => $request->blood_group,
+                'phone' => $request->phone,
+                'status' => $request->status ?? 1,
+            ];
 
-            // Assign role to the user
-            $user->assignRole($request->input('roles'));
+            $user = User::create($userData);
 
+            if (!$user) {
+                throw new \Exception('Failed to create user account');
+            }
+
+            if ($request->hasFile('profile_image') && $request->file('profile_image')->isValid()) {
+                /** @var UploadedFile $profileImageFile */
+                $profileImageFile = $request->file('profile_image');
+                $fileRecord = $this->fileService->attachFile($user, $profileImageFile, File::TYPE_IMAGE);
+                $user->profile_image_id = $fileRecord->id;
+                $user->save();
+            }
+
+            if ($request->filled('roles')) {
+                $assigned = $user->assignRole($request->roles);
+                if (!$assigned) {
+                    throw new \Exception('Failed to assign user role');
+                }
+            }
+
+            try {
+                Mail::to($user->email)->send(new WelcomeMail($user));
+            } catch (\Throwable $e) {
+                // Rollback or handle failure
+                DB::rollBack();
+                throw new \Exception("Welcome email error: " . $e->getMessage(), 0, $e);
+            }
             DB::commit();
 
             return redirect()->route('users.index')->with('success', 'User created successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
-
-            // Return with error message and input preserved
-            return redirect()->route('users.create')
-                ->withInput()
-                ->withErrors(['error' => 'Something went wrong: ' . $e->getMessage()]);
+            return redirect()->route('users.index')->with('error', 'User creation failed: ' . $e->getMessage());
         }
     }
-
     /**
      * Show the form for editing a user.
      *
@@ -182,96 +188,95 @@ class UserController extends Controller implements HasMiddleware
             $excludedRoles[] = Settings::get('role_super_admin', 'superadmin');
         }
 
-        $roles = Role::whereNotIn('name', $excludedRoles)
-            ->orderBy('name', 'ASC')
-            ->get();
+        $roles = Role::whereNotIn('name', $excludedRoles)->orderBy('name')->get();
 
-        // Assume single role; get current user's role name for form selection
-        $currentRoleName = $user->getRoleNames()->first();
-
-        return view('users.form', compact('user', 'roles', 'currentRoleName'));
+        return view('users.form', compact('user', 'roles'));
     }
-
     /**
-     * Update the specified user.
+     * Update the specified user in storage.
      *
-     * Validates inputs, including unique email with ignoring current user.
-     * Password update is optional.
-     * Uses transaction and policy authorization.
+     * Validate input, update user details, handle profile image, and sync roles.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param string $id
+     * @param  App\Http\Requests\UserRequest  $request
+     * @param  \App\Models\User  $user
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(Request $request, string $id)
+    public function update(UserRequest $request, User $user): RedirectResponse
     {
-        $user = User::findOrFail($id);
         $this->authorize('manage', $user);
-
-        $rules = [
-            'name' => 'required|string|max:255',
-            'email' => ['required', 'email', Rule::unique('users')->ignore($user->id)],
-            'password' => 'nullable|string|min:8|confirmed',
-            'roles' => ['required', 'string', Rule::exists('roles', 'name')],
-        ];
-
-        $validated = $request->validate($rules);
 
         DB::beginTransaction();
 
         try {
-            $user->name = $validated['name'];
-            $user->email = $validated['email'];
+            $user->name = $request->name;
+            $user->email = $request->email;
+            $user->gender = $request->gender;
+            $user->dob = $request->dob;
+            $user->address = $request->address;
+            $user->blood_group = $request->blood_group;
+            $user->phone = $request->phone;
+            $user->status = $request->status ?? 1;
 
-            if (!empty($validated['password'])) {
-                $user->password = Hash::make($validated['password']);
+            if ($request->filled('password')) {
+                $user->password = Hash::make($request->password);
             }
 
-            $user->save();
+            if ($request->hasFile('profile_image') && $request->file('profile_image')->isValid()) {
+                if ($user->profile_image_id) {
+                    $this->fileService->deleteFile($user->profile_image_id);
+                }
+                $profileImageFile = $request->file('profile_image');
+                $fileRecord = $this->fileService->attachFile($user, $profileImageFile, File::TYPE_IMAGE);
+                $user->profile_image_id = $fileRecord->id;
+            }
 
-            // Sync new role(s)
-            $user->syncRoles([$validated['roles']]);
+            if (!$user->save()) {
+                throw new \Exception('Failed to update user account');
+            }
+
+            if ($request->filled('roles')) {
+                $synced = $user->syncRoles([$request->roles]);
+                if (!$synced) {
+                    throw new \Exception('Failed to update user roles');
+                }
+            }
 
             DB::commit();
 
             return redirect()->route('users.index')->with('success', 'User updated successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
-
-            return redirect()->route('users.edit', $user->id)
-                ->withInput()
-                ->withErrors(['error' => 'Something went wrong: ' . $e->getMessage()]);
+            return redirect()->route('users.index')->with('error', 'User update failed: ' . $e->getMessage());
         }
     }
-
     /**
-     * Remove a user.
+     * Remove the specified user from storage.
      *
-     * Protects specific user IDs from deletion (e.g., system admins).
-     * Uses Gate to authorize deletion.
-     *
-     * @param \App\Models\User $user
+     * @param  \App\Models\User  $user
      * @return \Illuminate\Http\RedirectResponse
      */
-
     public function destroy(User $user): RedirectResponse
     {
-        // Authorization check via Gate
-        if (Gate::denies('delete', $user)) {
-            return redirect()
-                ->route('users.index')
-                ->with('error', 'Unauthorized action.');
-        }
-
-        // Policy-based authorization (if you have 'manage' policy)
         $this->authorize('manage', $user);
 
-        // Soft delete user
-        $user->delete();
+        if (Gate::denies('delete', $user)) {
+            return redirect()->route('users.index')->with('error', 'Unauthorized action.');
+        }
 
-        // Redirect back to index with success message
-        return redirect()
-            ->route('users.index')
-            ->with('success', 'User deleted successfully.');
+        DB::beginTransaction();
+
+        try {
+            if (!$user->delete()) {
+                throw new \Exception('Failed to delete user');
+            }
+
+            DB::commit();
+
+            return redirect()->route('users.index')->with('success', 'User deleted successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return redirect()->route('users.index')->with('error', 'User deletion failed: ' . $e->getMessage());
+        }
     }
 }

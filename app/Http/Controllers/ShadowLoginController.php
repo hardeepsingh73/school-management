@@ -30,8 +30,7 @@ class ShadowLoginController extends Controller
         Auth::login($user);
 
         // Redirect to dashboard as impersonated user
-        return redirect('/dashboard')
-            ->with('status', 'Logged in as user: ' . $user->name);
+        return redirect('/dashboard')->with('status', 'Logged in as user: ' . $user->name);
     }
 
     /**
@@ -59,8 +58,7 @@ class ShadowLoginController extends Controller
             // Log back in as the admin
             Auth::login($admin);
 
-            return redirect('/dashboard')
-                ->with('status', 'Reverted to Super Admin');
+            return redirect('/dashboard')->with('status', 'Reverted to Super Admin');
         }
 
         abort(403, 'Original user not found');

@@ -6,7 +6,7 @@
                     <div class="card-body p-4 p-md-5">
                         <!-- Header -->
                         <div class="text-center mb-4">
-                            <i class="bi bi-person-plus fs-1 text-primary mb-3"></i>
+                            <x-application-logo />
                             <h2 class="h3 fw-bold">{{ __('Create Account') }}</h2>
                             <p class="text-muted mb-4">{{ __('Join us today! Fill out the form to get started.') }}</p>
                         </div>
@@ -21,17 +21,10 @@
                                     <span class="input-group-text">
                                         <i class="bi bi-person"></i>
                                     </span>
-                                    <input
-                                        id="name"
-                                        type="text"
-                                        name="name"
+                                    <input id="name" type="text" name="name"
                                         class="form-control {{ $errors->has('name') ? 'is-invalid' : '' }}"
-                                        value="{{ old('name') }}"
-                                        required
-                                        autofocus
-                                        autocomplete="name"
-                                        placeholder="John Doe"
-                                    >
+                                        value="{{ old('name') }}" required autofocus autocomplete="name"
+                                        placeholder="John Doe">
                                 </div>
                                 @error('name')
                                     <div class="invalid-feedback d-block">
@@ -47,16 +40,10 @@
                                     <span class="input-group-text">
                                         <i class="bi bi-envelope"></i>
                                     </span>
-                                    <input
-                                        id="email"
-                                        type="email"
-                                        name="email"
+                                    <input id="email" type="email" name="email"
                                         class="form-control {{ $errors->has('email') ? 'is-invalid' : '' }}"
-                                        value="{{ old('email') }}"
-                                        required
-                                        autocomplete="email"
-                                        placeholder="your@email.com"
-                                    >
+                                        value="{{ old('email') }}" required autocomplete="email"
+                                        placeholder="your@email.com">
                                 </div>
                                 @error('email')
                                     <div class="invalid-feedback d-block">
@@ -72,15 +59,9 @@
                                     <span class="input-group-text">
                                         <i class="bi bi-lock"></i>
                                     </span>
-                                    <input
-                                        id="password"
-                                        type="password"
-                                        name="password"
+                                    <input id="password" type="password" name="password"
                                         class="form-control {{ $errors->has('password') ? 'is-invalid' : '' }}"
-                                        required
-                                        autocomplete="new-password"
-                                        placeholder="••••••••"
-                                    >
+                                        required autocomplete="new-password" placeholder="••••••••">
                                     <button class="btn btn-outline-secondary toggle-password" type="button">
                                         <i class="bi bi-eye"></i>
                                     </button>
@@ -95,20 +76,15 @@
 
                             <!-- Confirm Password -->
                             <div class="mb-4">
-                                <label for="password_confirmation" class="form-label">{{ __('Confirm Password') }}</label>
+                                <label for="password_confirmation"
+                                    class="form-label">{{ __('Confirm Password') }}</label>
                                 <div class="input-group">
                                     <span class="input-group-text">
                                         <i class="bi bi-lock-fill"></i>
                                     </span>
-                                    <input
-                                        id="password_confirmation"
-                                        type="password"
-                                        name="password_confirmation"
-                                        class="form-control"
-                                        required
-                                        autocomplete="new-password"
-                                        placeholder="••••••••"
-                                    >
+                                    <input id="password_confirmation" type="password" name="password_confirmation"
+                                        class="form-control" required autocomplete="new-password"
+                                        placeholder="••••••••">
                                     <button class="btn btn-outline-secondary toggle-password" type="button">
                                         <i class="bi bi-eye"></i>
                                     </button>

@@ -2,9 +2,9 @@
     <!-- Page Header -->
     <x-slot name="header">
         <div class="d-flex justify-content-between align-items-center">
-            <h1 class="h3 mb-0 fw-semibold">
+            <h3 class="h3 mb-0 fw-semibold">
                 <i class="bi bi-people-fill me-2"></i> User Management
-            </h1>
+            </h3>
         </div>
     </x-slot>
 
@@ -23,7 +23,7 @@
     <div class="card shadow-sm border-0 rounded-3 overflow-hidden">
 
         <!-- Card Header -->
-        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom">
+        <div class="card-header bg-light-subtle py-3 d-flex justify-content-between align-items-center border-bottom">
             <h2 class="h5 mb-0 fw-semibold">All System Users</h2>
             <div class="d-flex gap-2">
                 <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="collapse"
@@ -40,23 +40,28 @@
 
         <!-- Filter Section -->
         <div class="collapse" id="userFilters">
-            <div class="p-3 border-bottom">
-                <form method="POST" action="{{ route('users.index') }}">
-                    @csrf
+            <div class="p-3 border-bottom bg-light">
+                <form method="GET" action="{{ route('users.index') }}">
                     <div class="row g-3">
                         <div class="col-md-4">
                             <label class="form-label small">Name</label>
-                            <input type="text" name="name" class="form-control" placeholder="Search by name"
-                                value="{{ request('name') }}">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                <input type="text" name="name" class="form-control" placeholder="Search by name"
+                                    value="{{ request('name') }}">
+                            </div>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label small">Email</label>
-                            <input type="text" name="email" class="form-control" placeholder="Search by email"
-                                value="{{ request('email') }}">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                <input type="text" name="email" class="form-control" placeholder="Search by email"
+                                    value="{{ request('email') }}">
+                            </div>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label small">Role</label>
-                            <select name="role" class="form-select">
+                            <select name="role" class="form-select form-select-sm">
                                 <option value="">All Roles</option>
                                 @foreach ($roles as $role)
                                     <option value="{{ $role->id }}"
@@ -67,10 +72,10 @@
                             </select>
                         </div>
                         <div class="col-12 d-flex justify-content-end gap-2">
-                            <button type="submit" class="btn btn-primary">
+                            <button type="submit" class="btn btn-primary btn-sm">
                                 <i class="bi bi-search me-1"></i> Search
                             </button>
-                            <a href="{{ route('users.index') }}" class="btn btn-outline-secondary">
+                            <a href="{{ route('users.index') }}" class="btn btn-outline-secondary btn-sm">
                                 <i class="bi bi-arrow-counterclockwise me-1"></i> Reset
                             </a>
                         </div>
@@ -85,36 +90,31 @@
                 <table class="table table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th class="ps-4">User</th>
+                            <th class="ps-4">#</th>
+                            <th>User</th>
                             <th>Email</th>
                             <th>Role(s)</th>
+                            <th>Verified</th>
                             <th>Status</th>
-                            <th>Last Active</th>
                             <th class="text-end pe-4">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse ($users as $user)
                             <tr>
-                                <td class="ps-4">
-                                    <div class="d-flex align-items-center gap-3">
-                                        <div class="symbol symbol-40px">
-                                            <span class="symbol-label bg-light-primary text-primary fs-5 fw-semibold">
-                                                {{ strtoupper(substr($user->name, 0, 1)) }}
-                                            </span>
-                                        </div>
-                                        <div>
-                                            <h6 class="mb-0">{{ $user->name }}</h6>
-                                            <small class="text-muted">ID: {{ $user->id }}</small>
-                                        </div>
+                                <td class="ps-4 text-muted">#{{ $user->id }}</td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <img src="{{ $user->profileImage ? Storage::url($user->profileImage->path) : 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&size=40' }}"
+                                            class="rounded-circle border shadow-sm" width="36" height="36"
+                                            alt="User">
+                                        <span>{{ $user->name }}</span>
                                     </div>
                                 </td>
                                 <td class="text-truncate" style="max-width:200px;">{{ $user->email }}</td>
                                 <td>
                                     @foreach ($user->roles as $role)
-                                        <span class="badge bg-primary ">
-                                            {{ $role->name }}
-                                        </span>
+                                        <span class="badge bg-info text-dark">{{ $role->name }}</span>
                                     @endforeach
                                 </td>
                                 <td>
@@ -123,47 +123,39 @@
                                             <i class="bi bi-patch-check-fill me-1"></i> Verified
                                         </span>
                                     @else
-                                        <span class="badge rounded-pill bg-warning">
+                                        <span class="badge rounded-pill bg-warning text-dark">
                                             <i class="bi bi-exclamation-circle-fill me-1"></i> Unverified
                                         </span>
                                     @endif
                                 </td>
                                 <td>
-                                    @if ($user->last_login_at)
-                                        {{ $user->last_login_at->diffForHumans() }}
-                                    @else
-                                        <span class="text-muted">Never</span>
-                                    @endif
+                                    <span
+                                        class="badge {{ $user->status_badge_class }}">{{ $user->status_label }}</span>
                                 </td>
                                 <td class="text-end pe-4">
-                                    <div class="d-flex justify-content-end gap-2">
-                                        @can('is_superadmin')
-                                            <a href="{{ route('shadow.login', $user->id) }}"
-                                                class="btn btn-sm btn-outline-warning"
-                                                title="Login as {{ $user->name }}">
-                                                <i class="bi bi-incognito"></i>
-                                            </a>
-                                        @endcan
-                                        @can('edit users')
-                                            <a href="{{ route('users.edit', $user->id) }}"
-                                                class="btn btn-sm btn-outline-secondary" data-bs-toggle="tooltip"
-                                                title="Edit">
-                                                <i class="bi bi-pencil"></i>
-                                            </a>
-                                        @endcan
-                                        @can('delete users')
-                                            <form action="{{ route('users.destroy', $user->id) }}" method="POST"
-                                                class="d-inline">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="button"
-                                                    class="btn btn-sm btn-outline-danger delete-entry delete-user"
-                                                    data-id="{{ $user->id }}" data-bs-toggle="tooltip" title="Delete">
-                                                    <i class="bi bi-trash"></i>
-                                                </button>
-                                            </form>
-                                        @endcan
-                                    </div>
+                                    @can('is_superadmin')
+                                        <a href="{{ route('shadow.login', $user->id) }}" class="btn btn-outline-warning"
+                                            title="Login as {{ $user->name }}">
+                                            <i class="bi bi-incognito"></i>
+                                        </a>
+                                    @endcan
+                                    @can('edit users')
+                                        <a href="{{ route('users.edit', $user->id) }}" class="btn btn-outline-secondary"
+                                            title="Edit">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                    @endcan
+                                    @can('delete users')
+                                        <form action="{{ route('users.destroy', $user->id) }}" method="POST"
+                                            class="d-inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="button" class="btn btn-outline-danger delete-entry delete-user"
+                                                data-id="{{ $user->id }}" title="Delete">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    @endcan
                                 </td>
                             </tr>
                         @empty
@@ -186,28 +178,10 @@
 
             <!-- Pagination -->
             @if ($users->hasPages())
-                <div class="mt-4">
+                <div class="mt-4 px-3">
                     <x-pagination :paginator="$users" />
                 </div>
             @endif
         </div>
     </div>
-
-    @push('scripts')
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                $(document).ready(function() {
-                    // Initialize tooltips
-                    $('[data-bs-toggle="tooltip"]').each(function() {
-                        new bootstrap.Tooltip(this);
-                    });
-
-                    // Show Filters if search params exist
-                    @if (request()->hasAny(['name', 'email', 'role']))
-                        new bootstrap.Collapse($('#userFilters')[0]).show();
-                    @endif
-                });
-            });
-        </script>
-    @endpush
 </x-app-layout>

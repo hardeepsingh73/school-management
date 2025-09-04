@@ -3,14 +3,19 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UserRequest;
+use App\Mail\WelcomeMail;
 use App\Models\User;
-use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Spatie\Permission\Models\Role;
 
-class UserController extends Controller
+class UserController extends Controller implements HasMiddleware
 {
     /**
      * Define middleware permissions for specific controller actions.
@@ -22,67 +27,71 @@ class UserController extends Controller
     public static function middleware(): array
     {
         return [
-            new Middleware('permission:view users', only: ['index']),
-            new Middleware('permission:create users', only: ['create', 'store']),
+            new Middleware('permission:view users', only: ['index', 'show']),
+            new Middleware('permission:create users', only: ['store']),
+            new Middleware('permission:edit users', only: ['update']),
             new Middleware('permission:delete users', only: ['destroy']),
         ];
     }
+
     /**
      * Display a paginated list of users.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  App\Http\Requests\UserRequest  $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function index(Request $request)
+    public function index(): JsonResponse
     {
-        // Retrieve users with latest first, paginate 10 per page.
-        $users = User::latest()->paginate(10);
+        $users = User::with('roles')->latest()->paginate(10);
 
-        return response()->json($users);
+        return $this->successResponse($users);
     }
 
     /**
      * Store a newly created user in the database.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  App\Http\Requests\UserRequest  $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function store(Request $request)
+    public function store(UserRequest $request): JsonResponse
     {
-        //  Validate input
-        $validated = $request->validate([
-            'name'     => 'required|string|max:255',
-            'email'    => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-            'roles'    => ['sometimes', 'string', Rule::exists('roles', 'name')],
-        ]);
-
         DB::beginTransaction();
+
         try {
-            //  Create user with hashed password
             $user = User::create([
-                'name'     => $validated['name'],
-                'email'    => $validated['email'],
-                'password' => Hash::make($validated['password']),
+                'name' => $request->validated('name'),
+                'email' => $request->validated('email'),
+                'password' => Hash::make($request->validated('password')),
+                'gender' => $request->validated('gender') ?? null,
+                'dob' => $request->validated('dob') ?? null,
+                'address' => $request->validated('address') ?? null,
+                'blood_group' => $request->validated('blood_group') ?? null,
+                'phone' => $request->validated('phone') ?? null,
+                'status' => $request->validated('status') ?? 1,
             ]);
 
-            // Assign role if provided
-            if (!empty($validated['roles'])) {
-                $user->assignRole($validated['roles']);
+            if ($request->filled('roles')) {
+                $this->assignUserRole($user, $request->validated('roles'));
             }
 
+            try {
+                Mail::to($user->email)->send(new WelcomeMail($user));
+            } catch (\Throwable $e) {
+                // Rollback or handle failure
+                DB::rollBack();
+                throw new \Exception("Welcome email error: " . $e->getMessage(), 0, $e);
+            }
             DB::commit();
 
-            return response()->json([
-                'status' => true,
-                'user'   => $user
-            ], 201); // 201 = Created
+            return $this->successResponse(
+                $user->load('roles'),
+                'User created successfully',
+                201
+            );
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json([
-                'status' => false,
-                'error'  => $e->getMessage()
-            ], 500);
+
+            return $this->errorResponse($e->getMessage());
         }
     }
 
@@ -94,57 +103,52 @@ class UserController extends Controller
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\JsonResponse
      */
-    public function show(User $user)
+    public function show(User $user): JsonResponse
     {
-        return response()->json($user);
+        return $this->successResponse($user->load('roles'));
     }
 
     /**
      * Update the specified user in the database.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  App\Http\Requests\UserRequest  $request
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request, User $user)
+    public function update(UserRequest $request, User $user): JsonResponse
     {
-        //  Validate request
-        $validated = $request->validate([
-            'name'     => 'required|string|max:255',
-            'email'    => ['required', 'email', Rule::unique('users')->ignore($user->id)],
-            'password' => 'nullable|string|min:8|confirmed',
-            'roles'    => ['sometimes', 'string', Rule::exists('roles', 'name')],
-        ]);
+        $this->authorize('update', $user);
 
         DB::beginTransaction();
+
         try {
-            // Update user info
-            $user->name  = $validated['name'];
-            $user->email = $validated['email'];
+            $user->update([
+                'name' => $request->validated('name'),
+                'email' => $request->validated('email'),
+                'gender' => $request->validated('gender') ?? $user->gender,
+                'dob' => $request->validated('dob') ?? $user->dob,
+                'address' => $request->validated('address') ?? $user->address,
+                'blood_group' => $request->validated('blood_group') ?? $user->blood_group,
+                'phone' => $request->validated('phone') ?? $user->phone,
+                'status' => $request->validated('status') ?? $user->status,
+                'password' => $request->filled('password')
+                    ? Hash::make($request->validated('password'))
+                    : $user->password,
+            ]);
 
-            // Update password only if provided
-            if (!empty($validated['password'])) {
-                $user->password = Hash::make($validated['password']);
-            }
-            $user->save();
-
-            // Update roles if provided
-            if (!empty($validated['roles'])) {
-                $user->syncRoles([$validated['roles']]);
+            if ($request->filled('roles')) {
+                $this->syncUserRoles($user, $request->validated('roles'));
             }
 
             DB::commit();
 
-            return response()->json([
-                'status' => true,
-                'user'   => $user
-            ]);
+            return $this->successResponse(
+                $user->fresh('roles'),
+                'User updated successfully'
+            );
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json([
-                'status' => false,
-                'error'  => $e->getMessage()
-            ], 500);
+            return $this->errorResponse($e->getMessage());
         }
     }
 
@@ -156,21 +160,99 @@ class UserController extends Controller
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy(User $user)
+    public function destroy(User $user): JsonResponse
     {
-        // Prevent deletion of critical/system users
-        if (in_array($user->id, [1, 4])) {
-            return response()->json([
-                'status'  => false,
-                'message' => 'This user cannot be deleted.'
-            ], 403); // Forbidden
+        $this->authorize('delete', $user);
+
+        if ($this->isProtectedUser($user)) {
+            return $this->errorResponse('Protected user cannot be deleted', 403);
         }
 
-        $user->delete();
+        DB::beginTransaction();
 
+        try {
+            $user->delete();
+            DB::commit();
+
+            return $this->successResponse(
+                null,
+                'User deleted successfully'
+            );
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->errorResponse($e->getMessage());
+        }
+    }
+    /**
+     * Assign a role to the user.
+     *
+     * @param  \App\Models\User  $user
+     * @param  string  $role
+     * @throws \Exception
+     */
+    protected function assignUserRole(User $user, string $role): void
+    {
+        if (!Role::where('name', $role)->exists()) {
+            throw new \Exception("The specified role does not exist");
+        }
+
+        if (!$user->assignRole($role)) {
+            throw new \Exception("Failed to assign role to user");
+        }
+    }
+    /**
+     * Sync user roles to ensure only the specified role is assigned.
+     *
+     * @param  \App\Models\User  $user
+     * @param  string  $role
+     * @throws \Exception
+     */
+    protected function syncUserRoles(User $user, string $role): void
+    {
+        if (!Role::where('name', $role)->exists()) {
+            throw new \Exception("The specified role does not exist");
+        }
+
+        if (!$user->syncRoles([$role])) {
+            throw new \Exception("Failed to update user roles");
+        }
+    }
+    /**
+     * Check if the user is protected from deletion.
+     *
+     * @param  \App\Models\User  $user
+     * @return bool
+     */
+    protected function isProtectedUser(User $user): bool
+    {
+        return in_array($user->id, [1, 4]); // Protected user IDs
+    }
+
+    protected function successResponse(
+        mixed $data = null,
+        string $message = '',
+        int $status = 200
+    ): JsonResponse {
         return response()->json([
-            'status'  => true,
-            'message' => 'User deleted successfully.'
-        ]);
+            'success' => true,
+            'data' => $data,
+            'message' => $message
+        ], $status);
+    }
+    /**
+     * Standardized error response.
+     *
+     * @param  string  $message
+     * @param  int  $status
+     * @return \Illuminate\Http\JsonResponse
+     */
+    protected function errorResponse(
+        string $message,
+        int $status = 500
+    ): JsonResponse {
+        return response()->json([
+            'success' => false,
+            'message' => $message
+        ], $status);
     }
 }

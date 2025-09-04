@@ -2,7 +2,7 @@
     <!-- Page Header -->
     <x-slot name="header">
         <div class="d-flex justify-content-between align-items-center">
-            <h1 class="h3 mb-0"><i class="bi bi-person-circle me-2"></i> Profile</h1>
+            <h2 class="fw-semibold fs-4 text-dark mb-0"><i class="bi bi-person-circle me-2"></i> Profile</h2>
         </div>
     </x-slot>
 
@@ -85,14 +85,6 @@
                             {{ Auth::user()->updated_at->format('F j, Y') }}
                             <small class="text-muted">({{ Auth::user()->updated_at->diffForHumans() }})</small>
                         </dd>
-
-                        @if (Auth::user()->last_login_at)
-                            <dt class="col-sm-4 text-muted">Last Login</dt>
-                            <dd class="col-sm-8">
-                                {{ Auth::user()->last_login_at->format('F j, Y \a\t g:i A') }}
-                                <small class="text-muted">({{ Auth::user()->last_login_at->diffForHumans() }})</small>
-                            </dd>
-                        @endif
                     </dl>
                 </div>
             </div>

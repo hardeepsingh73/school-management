@@ -8,9 +8,10 @@ use App\Services\SearchService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 
-class ApiLogController extends Controller
+class ApiLogController extends Controller implements HasMiddleware
 {
     /**
      * Service that handles reusable search/filter functionality.
@@ -95,8 +96,6 @@ class ApiLogController extends Controller
     {
         ApiLog::truncate();
 
-        return redirect()
-            ->route('api-logs.index')
-            ->with('success', 'All api logs have been cleared.');
+        return redirect()->route('api-logs.index')->with('success', 'All api logs have been cleared.');
     }
 }

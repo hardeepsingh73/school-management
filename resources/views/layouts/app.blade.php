@@ -7,10 +7,10 @@
     <meta name="csrf-token" content="{{ csrf_token() }}" />
     <meta name="description" content="{{ config('app.description', 'Laravel Application') }}" />
 
-    <title>{{ isset($title) ? "$title | " : '' }}{{ setting('site_name', 'Laravel') }}</title>
+    <title>{{ isset($title) ? "$title | " : '' }}{{ setting('site_name', config('app.name')) }}</title>
 
     <!-- Favicon -->
-    <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon" />
+    <link rel="icon" href="{{ Storage::url(setting('favicon', 'favicon.ico')) }}" type="image/x-icon" />
     <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}">
 
     <!-- Bootstrap & Vite Assets -->
@@ -41,7 +41,7 @@
                     <header class="border-bottom pb-3 mb-4">
                         <div
                             class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
-                            <h1 class="h4 mb-2 mb-md-0 fw-bold text-dark">{{ $header }}</h1>
+                            {{ $header }}
                             @isset($breadcrumbs)
                                 <nav aria-label="breadcrumb">
                                     <ol class="breadcrumb small mb-0">
@@ -116,6 +116,28 @@
                 });
             @endif
 
+            $(document).ready(function() {
+                // Initialize tooltips
+                $('[data-bs-toggle="tooltip"]').each(function() {
+                    new bootstrap.Tooltip(this);
+                });
+
+                // Show Filters if search params exist
+                @if (request()->hasAny([
+                        'user_id',
+                        'login_at',
+                        'endpoint',
+                        'method',
+                        'ip_address',
+                        'key',
+                        'group',
+                        'name',
+                        'email',
+                        'role',
+                    ]))
+                    new bootstrap.Collapse($('#listSearchForm')[0]).show();
+                @endif
+            });
         });
     </script>
 </body>

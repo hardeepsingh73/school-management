@@ -6,7 +6,9 @@ use App\Exceptions\Handler;
 use App\Helpers\Settings;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Contracts\Debug\ExceptionHandler;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
@@ -50,6 +52,8 @@ class AppServiceProvider extends ServiceProvider
          */
         if (env('APP_ENV') === 'production') {
             URL::forceScheme('https');
+            DB::prohibitDestructiveCommands(true);
+            Model::shouldBeStrict();
         }
 
         /**

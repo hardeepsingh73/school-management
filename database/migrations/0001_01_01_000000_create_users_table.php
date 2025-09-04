@@ -17,6 +17,26 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->enum('gender', ['male', 'female', 'other', 'unspecified'])->nullable();
+            $table->date('dob')->nullable();
+            // New fields (Address + Blood Group)
+            $table->string('address', 191)->nullable();
+            $table->enum('blood_group', [
+                'A+',
+                'A-',
+                'B+',
+                'B-',
+                'AB+',
+                'AB-',
+                'O+',
+                'O-'
+            ])->nullable();
+
+            $table->string('phone', 20)->nullable();
+            $table->unsignedBigInteger('profile_image_id')->nullable();
+            
+            $table->tinyInteger('status')->default(1)->comment('1:active, 0:inactive');
+            $table->foreign('profile_image_id')->references('id')->on('files')->onDelete('set null');
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();

@@ -6,7 +6,7 @@
                     <div class="card-body p-4 p-md-5">
                         <!-- Header -->
                         <div class="text-center mb-4">
-                            <i class="bi bi-shield-lock fs-1 text-primary mb-3"></i>
+                            <x-application-logo />
                             <h2 class="h3 fw-bold">{{ __('Reset Password') }}</h2>
                             <p class="text-muted mb-0">
                                 {{ __('Forgot your password? Enter your email and we\'ll send you a reset link.') }}
@@ -26,16 +26,9 @@
                                     <span class="input-group-text">
                                         <i class="bi bi-envelope"></i>
                                     </span>
-                                    <input
-                                        id="email"
-                                        type="email"
-                                        name="email"
+                                    <input id="email" type="email" name="email"
                                         class="form-control {{ $errors->has('email') ? 'is-invalid' : '' }}"
-                                        value="{{ old('email') }}"
-                                        required
-                                        autofocus
-                                        placeholder="your@email.com"
-                                    >
+                                        value="{{ old('email') }}" required autofocus placeholder="your@email.com">
                                 </div>
                                 @error('email')
                                     <div class="invalid-feedback d-block mt-2">

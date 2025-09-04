@@ -24,36 +24,4 @@ class ErrorLog extends Model
         'url',      // URL the user was visiting when error occurred
         'method',   // HTTP method used for the request (GET/POST/PUT/DELETE)
     ];
-
-    /*
-     |--------------------------------------------------------------------------
-     | Relationships
-     |--------------------------------------------------------------------------
-     |
-     | If ErrorLog entries are related to any models (e.g., User who caused the error),
-     | you can define Eloquent relationships here.
-     | Example:
-     | public function user()
-     | {
-     |     return $this->belongsTo(User::class, 'user_id');
-     | }
-     |
-     */
-
-    /*
-     |--------------------------------------------------------------------------
-     | Scopes
-     |--------------------------------------------------------------------------
-     |
-     | Query scopes can be added here for reusable filtering, such as:
-     | - Filtering by date range
-     | - Searching by keyword
-     |
-     | Example:
-     | public function scopeRecent($query)
-     | {
-     |     return $query->orderBy('created_at', 'desc');
-     | }
-     |
-     */
 }

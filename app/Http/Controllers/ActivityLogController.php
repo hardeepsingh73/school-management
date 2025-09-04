@@ -7,9 +7,10 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 
-class ActivityLogController extends Controller
+class ActivityLogController extends Controller implements HasMiddleware
 {
     /**
      * Define route middleware permissions for this controller's actions.
@@ -85,12 +86,7 @@ class ActivityLogController extends Controller
     public function export(Request $request): StreamedResponse
     {
         // Build the query with optional filters
-        $logs = ActivityLog::query()
-            ->when($request->filled('user'), fn($q) => $q->where('causer_id', $request->user))
-            ->when($request->filled('type'), fn($q) => $q->where('subject_type', $request->type))
-            ->when($request->filled('event'), fn($q) => $q->where('event', $request->event))
-            ->latest()
-            ->get();
+        $logs = ActivityLog::query()->when($request->filled('user'), fn($q) => $q->where('causer_id', $request->user))->when($request->filled('type'), fn($q) => $q->where('subject_type', $request->type))->when($request->filled('event'), fn($q) => $q->where('event', $request->event))->latest()->get();
 
         // Set CSV filename with timestamp
         $fileName = 'activity_logs_' . now()->format('Y-m-d_H-i-s') . '.csv';
@@ -156,11 +152,18 @@ class ActivityLogController extends Controller
     {
         ActivityLog::truncate();
 
-        return redirect()
-            ->route('activity-logs.index')
-            ->with('success', 'All activity logs have been cleared.');
+        return redirect()->route('activity-logs.index')->with('success', 'All activity logs have been cleared.');
     }
-    
+    /**
+     * Restore a deleted or updated model based on the activity log entry.
+     *
+     * This method handles two scenarios:
+     * 1. If the log event is 'deleted', it attempts to restore the soft-deleted model.
+     * 2. If the log event is 'updated', it reverts the model to its previous state using old properties.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function restore($id)
     {
         $activityLog = ActivityLog::findOrFail($id);
@@ -173,7 +176,7 @@ class ActivityLogController extends Controller
         }
 
         // Handle Deleted Event
-        if ($activityLog->event === 'deleted') {
+        if ($activityLog->event === ActivityLog::EVENT_DELETED) {
             if (!in_array(SoftDeletes::class, class_uses_recursive($modelClass))) {
                 return redirect()->back()->with('error', 'This model does not support restoring.');
             }
@@ -188,7 +191,7 @@ class ActivityLogController extends Controller
         }
 
         // Handle Updated Event - revert to old properties
-        if ($activityLog->event === 'updated') {
+        if ($activityLog->event === ActivityLog::EVENT_UPDATED) {
             $model = $modelClass::find($modelId);
             if (!$model) {
                 return redirect()->back()->with('error', 'Record not found.');

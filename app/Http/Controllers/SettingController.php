@@ -6,10 +6,11 @@ use App\Models\Setting;
 use App\Services\SearchService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Routing\Controllers\Middleware;
 
-class SettingController extends Controller
+class SettingController extends Controller implements HasMiddleware
 {
     /**
      * Define middleware permissions for controller actions.
@@ -96,7 +97,7 @@ class SettingController extends Controller
         ]);
 
         // Handle image file upload if the setting type is 'image'
-        if ($request->type === 'image') {
+        if ($request->type === Setting::TYPE_IMAGE) {
             $validated['value'] = $this->handleImageUpload($request);
         } else {
             // For other types, accept value as-is (consider further type casting in model/helper)
@@ -105,9 +106,7 @@ class SettingController extends Controller
 
         Setting::create($validated);
 
-        return redirect()
-            ->route('settings.index')
-            ->with('success', 'Setting created successfully.');
+        return redirect()->route('settings.index')->with('success', 'Setting created successfully.');
     }
 
     /**
@@ -142,7 +141,7 @@ class SettingController extends Controller
             'description' => 'nullable|string|max:255',
         ]);
 
-        if ($request->type === 'image') {
+        if ($request->type === Setting::TYPE_IMAGE) {
             // If user requested to remove the existing image
             if ($request->has('remove_image') && $setting->value) {
                 Storage::disk('public')->delete($setting->value);
@@ -154,7 +153,7 @@ class SettingController extends Controller
             }
         } else {
             // If changing from image to other type, delete old image file if exists
-            if ($setting->type === 'image' && $setting->value) {
+            if ($setting->type === Setting::TYPE_IMAGE && $setting->value) {
                 Storage::disk('public')->delete($setting->value);
             }
 
@@ -164,9 +163,7 @@ class SettingController extends Controller
 
         $setting->update($validated);
 
-        return redirect()
-            ->route('settings.index')
-            ->with('success', 'Setting updated successfully.');
+        return redirect()->route('settings.index')->with('success', 'Setting updated successfully.');
     }
 
     /**
@@ -203,7 +200,7 @@ class SettingController extends Controller
                 continue; // Skip unknown keys gracefully
             }
 
-            if ($setting->type === 'image') {
+            if ($setting->type === Setting::TYPE_IMAGE) {
                 // Compose the input field name dynamically for file input
                 $fileField = "settings.$key";
 
@@ -232,7 +229,7 @@ class SettingController extends Controller
     public function destroy(Setting $setting): RedirectResponse
     {
         // Remove physical image file if applicable before deleting DB record
-        if ($setting->type === 'image' && $setting->value) {
+        if ($setting->type === Setting::TYPE_IMAGE && $setting->value) {
             Storage::disk('public')->delete($setting->value);
         }
 
@@ -240,9 +237,7 @@ class SettingController extends Controller
         $setting->delete();
 
         // Redirect back to settings index with success message
-        return redirect()
-            ->route('settings.index')
-            ->with('success', 'Setting deleted successfully.');
+        return redirect()->route('settings.index')->with('success', 'Setting deleted successfully.');
     }
 
     /**

@@ -15,9 +15,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class File extends Model
 {
-    use LogsActivity,SoftDeletes;
-
-    // File type constants for consistent references in code
+    use LogsActivity, SoftDeletes;
+    /**
+     * File type constants.
+     */
     public const TYPE_DOCUMENT = 1;
     public const TYPE_IMAGE    = 2;
     public const TYPE_AUDIO    = 3;

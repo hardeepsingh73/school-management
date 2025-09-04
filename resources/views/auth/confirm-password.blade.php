@@ -6,7 +6,7 @@
                     <div class="card-body p-4 p-md-5">
                         <!-- Header -->
                         <div class="text-center mb-4">
-                            <i class="bi bi-shield-lock fs-1 text-primary mb-3"></i>
+                            <x-application-logo />
                             <h2 class="h3 fw-bold">{{ __('Security Check') }}</h2>
                             <p class="text-muted mb-4">
                                 {{ __('This is a secure area of the application. Please confirm your password to continue.') }}

@@ -94,11 +94,11 @@
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $setting->key }}</td>
                                 <td>
-                                    @if ($setting->type === 'boolean')
+                                    @if ($setting->type === consthelper('Setting::TYPE_BOOLEAN'))
                                         <span class="badge bg-{{ $setting->value ? 'success' : 'danger' }}">
                                             {{ $setting->value ? 'Yes' : 'No' }}
                                         </span>
-                                    @elseif($setting->type === 'image')
+                                    @elseif($setting->type === consthelper('Setting::TYPE_IMAGE'))
                                         @if ($setting->value)
                                             <a href="{{ Storage::url($setting->value) }}" target="_blank"
                                                 data-bs-toggle="tooltip" title="View Full Image">
@@ -163,22 +163,4 @@
             @endif
         </div>
     </div>
-
-    <x-slot name="script">
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                $(function() {
-                    // Auto-show search if filters are applied
-                    @if (request()->hasAny(['key', 'group']))
-                        $('#listSearchForm').collapse('show');
-                    @endif
-
-                    // Initialize tooltips
-                    $('[data-bs-toggle="tooltip"]').each(function() {
-                        new bootstrap.Tooltip(this);
-                    });
-                });
-            });
-        </script>
-    </x-slot>
 </x-app-layout>

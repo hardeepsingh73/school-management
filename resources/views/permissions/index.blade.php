@@ -2,9 +2,9 @@
     <!-- Header -->
     <x-slot name="header">
         <div class="d-flex justify-content-between align-items-center">
-            <h1 class="h3 mb-0 fw-semibold">
+            <h2 class="fw-semibold fs-4 text-dark mb-0">
                 <i class="bi bi-shield-lock-fill me-2"></i> Permission Management
-            </h1>
+            </h2>
         </div>
     </x-slot>
 

@@ -18,6 +18,8 @@
         "vite": "^6.2.4"
     },
     "dependencies": {
+        "@fullcalendar/core": "^6.1.19",
+        "@fullcalendar/daygrid": "^6.1.19",
         "sweetalert2": "^10.16.7"
     }
 }

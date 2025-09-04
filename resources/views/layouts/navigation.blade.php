@@ -10,8 +10,12 @@
             <div class="hs_brand">
                 <!-- Brand/logo -->
                 <a class="navbar-brand d-flex align-items-center" href="{{ url('/') }}" aria-label="Home">
-                    <i class="bi bi-rocket-takeoff me-2"></i>
-                    <span class="fw-bold">{{ setting('site_name', 'Laravel') }}</span>
+                    @if (setting('dark_logo_icon'))
+                        <img src="{{ Storage::url(setting('dark_logo_icon')) }}" alt="Logo" class="me-2" style="height: 32px;">
+                    @else
+                        <i class="bi bi-rocket-takeoff me-2"></i>
+                    @endif
+                    <span class="fw-bold">{{ setting('site_name', config('app.name')) }}</span>
                 </a>
             </div>
             <!-- Main navbar toggler -->

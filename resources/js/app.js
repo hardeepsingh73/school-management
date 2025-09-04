@@ -10,6 +10,12 @@ window.bootstrap = bootstrap;
 // SweetAlert2
 import Swal from 'sweetalert2';
 window.Swal = Swal;
+// FullCalendar                 
+import { Calendar } from '@fullcalendar/core';
+window.Calendar = Calendar;
+import dayGridPlugin from '@fullcalendar/daygrid';
+window.dayGridPlugin = dayGridPlugin;
+
 document.addEventListener('DOMContentLoaded', function () {
     $(function () {
         // Sidebar toggle functionality
@@ -56,6 +62,19 @@ document.addEventListener('DOMContentLoaded', function () {
                     $form.off('submit').trigger('submit');
                 }
             });
+        });
+        // Toggle password visibility for both fields
+        $('.toggle-password').on('click', function () {
+            const $input = $(this).closest('.input-group').find('input');
+            const $icon = $(this).find('i');
+
+            if ($input.attr('type') === 'password') {
+                $input.attr('type', 'text');
+                $icon.removeClass('bi-eye').addClass('bi-eye-slash');
+            } else {
+                $input.attr('type', 'password');
+                $icon.removeClass('bi-eye-slash').addClass('bi-eye');
+            }
         });
     });
 });
