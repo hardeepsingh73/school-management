@@ -20,7 +20,6 @@ return new class extends Migration
             // Attendance data
             $table->date('date');
             $table->json('attendance')->nullable();
-            $table->foreignId('recorded_by')->constrained('users')->onDelete('set null');
 
 
             // Timestamps
