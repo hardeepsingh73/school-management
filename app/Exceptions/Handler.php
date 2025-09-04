@@ -9,7 +9,6 @@ use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Auth\AuthenticationException;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -27,9 +26,6 @@ class Handler extends ExceptionHandler
      */
     public function report(Throwable $e): void
     {
-        if (Schema::hasTable('settings')) {
-            Log::error('setting table not found');
-        }
         /**
          * Skip logging certain exceptions into the database:
          * - AuthenticationException → User is not logged in

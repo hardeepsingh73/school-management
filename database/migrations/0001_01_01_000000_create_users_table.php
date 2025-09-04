@@ -33,10 +33,8 @@ return new class extends Migration
             ])->nullable();
 
             $table->string('phone', 20)->nullable();
-            $table->unsignedBigInteger('profile_image_id')->nullable();
             
             $table->tinyInteger('status')->default(1)->comment('1:active, 0:inactive');
-            $table->foreign('profile_image_id')->references('id')->on('files')->onDelete('set null');
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();
