@@ -1,7 +1,7 @@
 <div id="sidebar" class="bg-white border-end d-none d-lg-block shadow-sm" style="width: 250px;">
     <div class="list-group list-group-flush vh-100 overflow-auto">
         <ul class="side-menu list-unstyled mb-0">
-
+            {{--
             <!-- Dashboard -->
             <li class="sidebar-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                 <a href="{{ route('dashboard') }}"
@@ -10,6 +10,7 @@
                     <span>Dashboard</span>
                 </a>
             </li>
+            --}}
 
             <!-- ===================== MANAGEMENT ===================== -->
             <li class="sidebar-header px-3 pt-3 pb-2">
