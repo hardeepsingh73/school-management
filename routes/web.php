@@ -25,7 +25,9 @@ use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\TimetableController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', [AuthenticatedSessionController::class, 'create'])->name('index');
+Route::get('/', function () {
+    return redirect()->route('login');
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'dashboard'])->middleware('verified')->name('dashboard');
