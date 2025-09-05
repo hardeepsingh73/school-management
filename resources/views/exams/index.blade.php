@@ -115,14 +115,10 @@
                                 <td>
                                     {{ \Carbon\Carbon::parse($exam->exam_date)->format('Y-m-d') }}
                                 </td>
-                                <td>{{ $exam->schoolClass->full_name ?? 'N/A' }}
+                                <td>{{ $exam->class->full_name ?? 'N/A' }}
                                 </td>
                                 <td class="text-end pe-4">
                                     <div class="d-flex justify-content-end gap-2">
-                                        <a href="{{ route('exams.show', $exam->id) }}"
-                                            class="btn btn-sm btn-outline-primary" title="View">
-                                            <i class="bi bi-eye"></i>
-                                        </a>
                                         @can('edit exams')
                                             <a href="{{ route('exams.edit', $exam->id) }}"
                                                 class="btn btn-sm btn-outline-secondary" title="Edit">
