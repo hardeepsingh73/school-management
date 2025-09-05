@@ -11,7 +11,8 @@
                 <!-- Brand/logo -->
                 <a class="navbar-brand d-flex align-items-center" href="{{ url('/') }}" aria-label="Home">
                     @if (setting('dark_logo_icon'))
-                        <img src="{{ Storage::url(setting('dark_logo_icon')) }}" alt="Logo" class="me-2" style="height: 32px;">
+                        <img src="{{ Storage::url(setting('dark_logo_icon')) }}" alt="Logo" class="me-2"
+                            style="height: 32px;">
                     @else
                         <i class="bi bi-rocket-takeoff me-2"></i>
                     @endif
@@ -63,7 +64,7 @@
                                 </a>
                             </li>
                         @endif
-
+                        {{--
                         @if (Route::has('register'))
                             <li class="nav-item">
                                 <a class="nav-link {{ request()->routeIs('register') ? 'active' : '' }}"
@@ -73,6 +74,7 @@
                                 </a>
                             </li>
                         @endif
+                        --}}
                     @else
                         <!-- User dropdown -->
                         <li class="nav-item dropdown">

@@ -7,7 +7,7 @@
                         <!-- Header -->
                         <div class="text-center mb-4">
                             <a href="{{ url('/') }}" class="text-decoration-none">
-                                <x-application-logo/>
+                                <x-application-logo />
                                 <h2 class="h3 mt-2 fw-bold">{{ setting('site_name', config('app.name')) }}</h2>
                             </a>
                             <p class="text-muted mb-4">{{ __('Sign in to your account') }}</p>
@@ -79,7 +79,7 @@
                                     </a>
                                 </div>
                             @endif
-
+                            {{--
                             <!-- Register Link -->
                             @if (Route::has('register'))
                                 <div class="text-center">
@@ -90,6 +90,7 @@
                                     </p>
                                 </div>
                             @endif
+                            --}}
                         </form>
                     </div>
                 </div>
