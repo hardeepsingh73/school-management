@@ -52,6 +52,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'status' => 'integer',
         ];
     }
     /**
@@ -84,7 +85,7 @@ class User extends Authenticatable
     {
         return $this->belongsTo(File::class, 'profile_image_id');
     }
-    
+
     const STATUS_ACTIVE = 1;
     const STATUS_INACTIVE = 0;
 

@@ -46,7 +46,8 @@ class Exams extends Model
      */
     protected $casts = [
         'exam_date' => 'date',
-        'additional_information' => 'array'
+        'additional_information' => 'array',
+        'type' => 'integer',
     ];
     /**
      * Relationship with Subject
