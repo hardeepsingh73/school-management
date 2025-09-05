@@ -80,7 +80,7 @@
         </div>
 
         {{-- ACTIONS --}}
-        <div class="mt-4 d-flex justify-content-between">
+        <div class="mt-4 d-flex justify-content-between align-items-center">
             <x-back-button :href="route('timetables.index')" class="btn-outline-secondary">
                 <i class="bi bi-arrow-left me-1"></i> Back
             </x-back-button>

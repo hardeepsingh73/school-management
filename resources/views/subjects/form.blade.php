@@ -66,7 +66,7 @@
 
                 </div>
                 {{-- Actions --}}
-                <div class="mt-4 d-flex justify-content-between">
+                <div class="mt-4 d-flex justify-content-between align-items-center">
                     <button type="submit" class="btn btn-primary px-4">
                         {{ isset($subject) ? 'Update Subject' : 'Create Subject' }}
                     </button>

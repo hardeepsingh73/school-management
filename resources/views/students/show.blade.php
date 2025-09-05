@@ -71,7 +71,7 @@
                 <div class="col-md-4"><strong>Leaving Reason:</strong> {!! nl2br(e($info['leaving_reason'] ?? 'N/A')) !!}</div>
             </div>
 
-            <div class="mt-4 d-flex justify-content-between">
+            <div class="mt-4 d-flex justify-content-between align-items-center">
                 <x-back-button :href="route('students.index')" class="btn-outline-secondary">
                     <i class="bi bi-arrow-left me-1"></i> Back
                 </x-back-button>
